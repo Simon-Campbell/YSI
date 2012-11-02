@@ -16,24 +16,43 @@ def main():
 
 def parse_comment(file):
         line = file.readline()
+        description = {}
 
         while (line != ""):
                 if (is_close_doc_comment(line)):
-                        break
+                    break
                 elif (is_doc_summary(line)):
-                        print get_doc_summary(file)
+                       description['summary'], line = get_doc_summary(file)
+                elif (is_doc_params(line)):
+                        description['params'], line = get_doc_params(file)
+                else:
+                    line = file.readline()
 
-                line = file.readline()
+        print description
 
 def is_doc_summary(text):
-        stripped = text.lstrip()
+        if is_doc_header('Function', text):
+            print 'doc-converter: Found YSI comment summary'
 
-        if (stripped.startswith('Function:')):
-                print 'doc-converter: Found YSI comment summary'
-
-                return True
+            return True
         else:
-                return False
+            return False
+
+def is_doc_params(text):
+    if is_doc_header('Params', text):
+        print 'doc-converter: Found YSI parameter list'
+        
+        return True
+    else:
+        return False
+
+def is_doc_header(header, text):
+    stripped = text.lstrip()
+
+    if (stripped.startswith(header + ':')):
+        return True
+    else:
+        return False
 
 def get_doc_summary(file):
         line = file.readline()
@@ -47,10 +66,35 @@ def get_doc_summary(file):
 
                 line = file.readline()
                 
-        return summary
+        return summary, line
+
+def get_doc_params(file):
+        line = file.readline()
+        params = []
+        last_param = {}
+        is_continued = False
+        
+        while (line != ""):
+            if (is_end_doc_section(line)):
+                break
+            else:
+                # param <= name - documentation
+                param = line.split('-', 1)
+
+                if len(param) < 2:
+                    print 'continue'
+                else:
+                    print 'got param'
+                    last_param = { param[0].strip(): param[1].strip() }
+                    params.append()
+
+            line = file.readline()
+
+        return params, line
+
 
 def is_end_doc_section(text):
-        return is_close_doc_comment(text)
+        return is_close_doc_comment(text) or is_doc_params(text) or is_doc_summary(text)
                         
 def is_open_doc_comment(text):
         stripped = text.lstrip()

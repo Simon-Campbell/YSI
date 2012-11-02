@@ -1,0 +1,60 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Syntax
+; 	<%Title%>
+; 	Before
+; 	After
+; Some syntax rules are context dependent, e.g. 
+; FunctionFooter is after FunctionHeader.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; <%Name%>		= In-built variable
+; <%%Name%>		= User-defined variable
+; <%LPattern>	= Make a list of objects and extract a pattern
+
+<%FunctionHeader%>
+<before>/*----------------------------------------------------------------------------*\</before>
+<after>/** </after>
+
+<%FunctionFooter%>
+<before>/*----------------------------------------------------------------------------*\</before>
+<after>*/</after>
+
+<%FunctionSummary%>
+<before>
+Function: 
+	<%%Text%>
+</before>
+<after>
+* <summary>
+*	<%%Text%>
+* </summary>
+</after>
+
+<%FunctionParameters%>
+<before>
+	Params:
+	<%L<%%ParamName%> - <%%ParamDescription>%>
+</before>
+<after>
+* <param name="<%%ParamName>">
+*	<%%ParamDescription%>
+* </param>
+</after>
+
+<%FunctionReturn%>
+<before>
+Return:
+	<%%Text%>
+</before>
+
+<after>
+* <returns>
+*	<%%Text%>
+* </returns>
+</after>
+
+<%FunctionNote%>
+<before>
+</before>
+
+<after>
+</after>

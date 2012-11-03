@@ -1,5 +1,6 @@
 import io
 import glob
+import sys
 
 filepos = 0
 
@@ -7,8 +8,9 @@ def main():
     # open a test file for reading
     # 'test.pwn'
     # 'C:/Development/Pawn/YSI/pawno/include/YSI/y_users.inc'
-    files = glob.glob('C:\Development\Pawn\YSI\pawno\include\YSI\*.inc')
-
+    #files = glob.glob('C:\Development\Pawn\YSI\pawno\include\YSI\*.inc')
+    files = ['test.pwn']
+    
     print 'doc-converter: Found ' + str(len(files)) + ' in YSI include directory.'
     
     for f in files:
@@ -17,19 +19,42 @@ def main():
         convert_file(f)
         
 def convert_file(filename):
-    with io.open(filename) as file:
-                filepos = 0
+    output_text = ''
+    
+    with io.open(filename, 'r') as file:
+        line = file.readline()
+
+        while (line != ""):
+                if (is_open_doc_comment(line)):
+                    func = parse_comment(file)
+
+                    # add PawnDoc'd version to buffer
+                    output_text += get_pawn_xml(func)
+                else:
+                    # add normal line to buffer
+                    output_text += line
+                    
                 line = file.readline()
 
-                while (line != ""):
-                        if (is_open_doc_comment(line)):
-                            func = parse_comment(file)
+    with io.open(filename + '.txt', 'w') as file:
+        file.write(output_text)
 
-                            # output XML
-                            print get_pawn_xml(func)
-                            
-                        line = file.readline()
+def file_range_replace(file, start, end, text):
+    file.seek(0)
 
+    contents = file.read()
+    contents = contents.replace(contents[start:end], text)
+
+    print 'file:'
+    print contents
+
+    file.seek(end)
+    
+    #file.write(contents)
+    #file.flush()
+    
+    #file.seek(start + sys.getsizeof(text), io.SEEK_SET)
+    
 def get_pawn_xml(function):
     pawn_xml = '/**\n'
 

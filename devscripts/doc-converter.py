@@ -1,19 +1,69 @@
 import io
+import glob
 
 filepos = 0
 
 def main():
     # open a test file for reading
-    with io.open('test.pwn') as file:
+    # 'test.pwn'
+    # 'C:/Development/Pawn/YSI/pawno/include/YSI/y_users.inc'
+    files = glob.glob('C:\Development\Pawn\YSI\pawno\include\YSI\*.inc')
+
+    print 'doc-converter: Found ' + str(len(files)) + ' in YSI include directory.'
+    
+    for f in files:
+        print 'doc-converter: Converting ' + f
+        
+        convert_file(f)
+        
+def convert_file(filename):
+    with io.open(filename) as file:
                 filepos = 0
                 line = file.readline()
 
                 while (line != ""):
                         if (is_open_doc_comment(line)):
-                                print 'YSI Doc:'
-                                print parse_comment(file)
-                                
+                            func = parse_comment(file)
+
+                            # output XML
+                            print get_pawn_xml(func)
+                            
                         line = file.readline()
+
+def get_pawn_xml(function):
+    pawn_xml = '/**\n'
+
+    if 'summary' in function:
+        pawn_xml += ' * <summary>\n' + xml_prettify_data(function['summary'].strip()) + '\n * </summary>\n'
+
+    if 'params' in function:
+        for param in function['params']:
+            for name, desc in param.items():
+                pawn_xml += ' * <param name="'+ name +'">\n' + xml_prettify_data(desc.strip()) + '\n * </param>\n'
+
+    if 'return' in function:
+        pawn_xml += ' * <returns>\n' + xml_prettify_data(function['return'].strip()) + '\n * </returns>\n'
+        
+    if 'note' in function:
+        pawn_xml += ' * <remarks>\n' + xml_prettify_data(function['note'].strip()) + '\n * </remarks>\n'
+        
+    pawn_xml += ' */\n'
+
+    return pawn_xml
+
+def xml_prettify_data(inner, level=1):
+    # Takes the inner content of XML and formats it nicely.
+    # Level 1 Indent:
+    #   ' *  {%inner}'
+    #   ' *    {%inner}'
+
+    pretty = ''
+    lines  = inner.split('\n')
+    
+    for line in lines:
+        pretty += ' *' + (' ' * level * 2) + line + '\n'
+
+    return pretty.rstrip()
 
 def parse_comment(file):
         line = file.readline()
@@ -32,12 +82,12 @@ def parse_comment(file):
                 elif is_return_doc_header(line):
                         description['return'], line = get_doc_return(file)
                 else:
-                    # unknown doc header/content consume
+                    # unknown doc header/content, consume
                     line = file.readline()
                     
-                    print 'doc-converter: ' + line
-                    print 'doc-converter: Unknown document header found in comment context'
-                    print 'doc-converter: the line has been skipped'
+                    # print 'doc-converter: ' + line
+                    # print 'doc-converter: Unknown document header found in comment context'
+                    # print 'doc-converter: the line has been skipped'
                     
         return description
     

@@ -1,0 +1,38 @@
+/**
+ * <summary>
+ *  -
+ * </summary>
+ * <param name="Name">
+ *  This parameter does stuff!
+ * </param>
+ * <param name="AnotherParam">
+ *  This one does something different and
+ *  spans multiple lines
+ *  Return
+ * </param>
+ */
+stock TestFunction() {
+}
+
+/**
+ * <summary>
+ *  A function summary
+ * </summary>
+ * <param name="Name1">
+ *  The name of a certain parameter
+ * </param>
+ * <param name="Name2">
+ *  The name of a certain multi-line parameter
+ *  that spans multiple lines
+ * </param>
+ * <returns>
+ *  This function returns some awesome stuff
+ * </returns>
+ * <remarks>
+ *  I would like to note that this function has some form of notes
+ *  I hope that these notes are sufficient
+ * </remarks>
+ */
+public Function() { }
+public FunctionX() {
+}

@@ -8,8 +8,9 @@ def main():
     # open a test file for reading
     # 'test.pwn'
     # 'C:/Development/Pawn/YSI/pawno/include/YSI/y_users.inc'
+    
     #files = glob.glob('C:\Development\Pawn\YSI\pawno\include\YSI\*.inc')
-    files = ['test.pwn']
+    files = ['test.pwn', 'y_users.inc']
     
     print 'doc-converter: Found ' + str(len(files)) + ' in YSI include directory.'
     

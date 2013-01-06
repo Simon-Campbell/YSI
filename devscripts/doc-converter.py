@@ -9,8 +9,8 @@ def main():
     # 'test.pwn'
     # 'C:/Development/Pawn/YSI/pawno/include/YSI/y_users.inc'
     
-    #files = glob.glob('C:\Development\Pawn\YSI\pawno\include\YSI\*.inc')
-    files = ['test.pwn', 'y_users.inc']
+    files = glob.glob('D:\YSI\pawno\include\YSI\*.inc')
+    #files = ['test.pwn', 'y_users.inc']
     
     print 'doc-converter: Found ' + str(len(files)) + ' in YSI include directory.'
     
@@ -21,12 +21,13 @@ def main():
         
 def convert_file(filename):
     output_text = ''
-    
+    is_file_header = True
     with io.open(filename, 'r') as file:
         line = file.readline()
 
         while (line != ""):
-                if (is_open_doc_comment(line)):
+                # don't parse file header comments
+                if (is_open_doc_comment(line)) and not is_file_header:
                     func = parse_comment(file)
 
                     # add PawnDoc'd version to buffer
@@ -34,7 +35,8 @@ def convert_file(filename):
                 else:
                     # add normal line to buffer
                     output_text += line
-                    
+                if is_file_header:
+                    is_file_header = False
                 line = file.readline()
 
     with io.open(filename + '.txt', 'w') as file:
@@ -57,23 +59,23 @@ def file_range_replace(file, start, end, text):
     #file.seek(start + sys.getsizeof(text), io.SEEK_SET)
     
 def get_pawn_xml(function):
-    pawn_xml = '/**\n'
+    pawn_xml = '/**\r\n'
 
     if 'summary' in function:
-        pawn_xml += ' * <summary>\n' + xml_prettify_data(function['summary'].strip()) + '\n * </summary>\n'
+        pawn_xml += ' * <summary>\r\n' + xml_prettify_data(function['summary'].strip()) + '\r\n * </summary>\r\n'
 
     if 'params' in function:
         for param in function['params']:
             for name, desc in param.items():
-                pawn_xml += ' * <param name="'+ name +'">\n' + xml_prettify_data(desc.strip()) + '\n * </param>\n'
+                pawn_xml += ' * <param name="'+ name +'">\r\n' + xml_prettify_data(desc.strip()) + '\r\n * </param>\r\n'
 
     if 'return' in function:
-        pawn_xml += ' * <returns>\n' + xml_prettify_data(function['return'].strip()) + '\n * </returns>\n'
+        pawn_xml += ' * <returns>\r\n' + xml_prettify_data(function['return'].strip()) + '\r\n * </returns>\r\n'
         
     if 'note' in function:
-        pawn_xml += ' * <remarks>\n' + xml_prettify_data(function['note'].strip()) + '\n * </remarks>\n'
+        pawn_xml += ' * <remarks>\r\n' + xml_prettify_data(function['note'].strip()) + '\r\n * </remarks>\r\n'
         
-    pawn_xml += ' */\n'
+    pawn_xml += ' */\r\n'
 
     return pawn_xml
 
@@ -84,17 +86,16 @@ def xml_prettify_data(inner, level=1):
     #   ' *    {%inner}'
 
     pretty = ''
-    lines  = inner.split('\n')
+    lines  = inner.split('\r\n')
     
     for line in lines:
-        pretty += ' *' + (' ' * level * 2) + line + '\n'
+        pretty += ' *' + (' ' * level * 2) + line + '\r\n'
 
     return pretty.rstrip()
 
 def parse_comment(file):
         line = file.readline()
         description = {}
-
         while (line != ""):
                 if is_close_doc_comment(line):
                     line = file.readline()
@@ -156,9 +157,13 @@ def get_doc_params(file):
                 param = line.split('-', 1)
 
                 if len(param) < 2:
-                    # fppend to the last parameters
-                    # documentation
-                    last_param[last_param.keys()[0]] += param[0].lstrip()
+                    try:
+                        # append to the last parameters
+                        # documentation
+                        last_param[last_param.keys()[0]] += param[0].lstrip()
+                    except:
+                        print line
+                        break
                 else:
                     # Found a new parameter so set last param to
                     # equal it and append it to the parameter list
@@ -269,4 +274,3 @@ class FunctionDescriptor( object ):
     
 if __name__ == "__main__":
     main()
-

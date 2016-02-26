@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					=================================
 					Y Sever Includes - Misc Functions
 					=================================
@@ -36,6 +36,7 @@ Legal:
 		yom - French translation.
 		50p - Polish translation.
 		Zamaroht - Spanish translation.
+		Los - Portuguese translation.
 		Dracoblue, sintax, mabako, Xtreme, other coders - Producing other modes
 			for me to strive to better.
 		Pixels^ - Running XScripters where the idea was born.
@@ -45,6 +46,11 @@ Legal:
 		Thiadmer - PAWN, whose limits continue to amaze me!
 		Kye/Kalcor - SA:MP.
 		SA:MP Team past, present and future - SA:MP.
+	
+	Optional plugins:
+		Gamer_Z - GPS.
+		Incognito - Streamer.
+		Me - sscanf2, fixes2, Whirlpool.
 	
 Version:
 	0.1.3
@@ -72,7 +78,8 @@ Variables:
 		TRUE - True hack for infinate loops.
 		FALSE - False hack for one-time loops.
 		NULL - 1 long string for passing via Call(Remote|Local)Function.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #include "internal\y_version"
 
@@ -164,77 +171,77 @@ new stock
 #define floordiv(%0,%1) \
 	((%0)/(%1))
 
-/*----------------------------------------------------------------------------*\
-Function:
-	isnull
-Params:
-	str - String to check if is null.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>isnull</summary>
+<param name="str">String to check if is null.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if !defined isnull
 	#define isnull(%1) \
 		((%1[0] == 0) || (%1[0] == 1 && %1[1] == 0))
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	isodd
-Params:
-	value - Value to check if is odd.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>isodd</summary>
+<param name="value">Value to check if is odd.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define isodd(%1) \
 	((%1) & 1)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	iseven
-Params:
-	value - Value to check if is even.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>iseven</summary>
+<param name="value">Value to check if is even.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define iseven(%1) \
 	(!isodd(%1))
 
-/*----------------------------------------------------------------------------*\
-Function:
-	strcpy
-Params:
-	dest - Destination string.
-	src - Source string.
-	len - (Implicit) maximum length of the destination.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>strcpy</summary>
+<param name="dest">Destination string.</param>
+<param name="src">Source string.</param>
+<param name="len">(Implicit) maximum length of the destination.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define strcpy(%0,%1) \
 	strcat((%0[0] = '\0', %0), %1)
 //	memcpy(%0,%1,0,strlen(%1)*4+4,%2)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	StripNL
-Params:
-	str[] - The string to remove the newline characters from
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>StripNL</summary>
+<param name="str[]">The string to remove the newline characters from</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Updated from old versions, should be more efficient
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock StripNL(str[])
 {
@@ -244,17 +251,17 @@ stock StripNL(str[])
 	while (i-- && str[i] <= ' ') str[i] = '\0';
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	endofline
-Params:
-	line[] - String to check.
-	pos - Postion to start from.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>endofline</summary>
+<param name="line[]">String to check.</param>
+<param name="pos">Postion to start from.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Checks if the current point in a line is the end of non-whitespace data.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock endofline(line[], pos)
 {
@@ -264,18 +271,18 @@ stock endofline(line[], pos)
 	return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	chrfind
-Params:
-	needle - The character to find.
-	haystack[] - The string to find it in.
-	start - The offset to start from.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>chrfind</summary>
+<param name="needle">The character to find.</param>
+<param name="haystack[]">The string to find it in.</param>
+<param name="start">The offset to start from.</param>
+<returns>
 	Fail - -1, Success - pos
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock chrfind(needle, haystack[], start = 0)
 {
@@ -302,14 +309,13 @@ stock chrfindp(needle, haystack[], start = 0)
 	return -1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	bernstein
-Params:
-	string[] - the string to hash.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>bernstein</summary>
+<param name="string[]">the string to hash.</param>
+<returns>
 	the bernstein hash of the input string
-Notes:
+</returns>
+<remarks>
 	This is a 32bit hash system so is not very secure, however we're only
 	using this as a string enumerator to uniquely identify strings easilly
 	and allow for a binary search of strings based on the hash of their name.
@@ -331,7 +337,8 @@ Notes:
 	strings for the updated text system involving file based styling and this
 	is not checked for collisions as it's unimportant.  But this doesn't affect
 	the function at all, I just mentioned it here for "interest".
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock bernstein(string[])
 {
@@ -348,16 +355,16 @@ stock bernstein(string[])
 	return hash;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	ishex
-Params:
-	str[] - String to check.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>ishex</summary>
+<param name="str[]">String to check.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock ishex(str[])
 {
@@ -375,16 +382,16 @@ stock ishex(str[])
 	return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	unpack
-Params:
-	str[] - String to unpack
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>unpack</summary>
+<param name="str[]">String to unpack</param>
+<returns>
 	unpacked string
-Notes:
+</returns>
+<remarks>
 	Mainly used for debugging.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock unpack(const str[])
 {
@@ -398,16 +405,16 @@ stock unpack(const str[])
 	return ret;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	GetIP
-Params:
-	playerid - Player to get IP of.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>GetIP</summary>
+<param name="playerid">Player to get IP of.</param>
+<returns>
 	IP as a 32bit int.
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock GetIP(playerid)
 {
@@ -426,17 +433,17 @@ stock GetIP(playerid)
 	return ipv;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	getstring
-Params:
-	addr - Address of the string on the heap.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>getstring</summary>
+<param name="addr">Address of the string on the heap.</param>
+<returns>
 	string
-Notes:
+</returns>
+<remarks>
 	Is passed the result of getarg, which will be the address of a string (in
 	theory) and uses that for DMA to get the string.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock getstring(addr)
 {
@@ -454,16 +461,16 @@ stock getstringarg(addr)
 	return ret;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	isnumeric
-Params:
-	str[] - String to check
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>isnumeric</summary>
+<param name="str[]">String to check</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Checks if a given string is numeric.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock isnumeric(str[])
 {
@@ -476,16 +483,16 @@ stock isnumeric(str[])
 }
 
 #if !defined _inc_sscanf || 1
-	/*------------------------------------------------------------------------*-
-	Function:
-		hexstr
-	Params:
-		string[] - String to convert to a number.
-	Return:
+	/**----------------------------------------------------------------------**\
+	<summary>hexstr</summary>
+	<param name="	string[]">String to convert to a number.</param>
+	<returns>
 		value of the passed hex string.
-	Notes:
-		-
-	-*------------------------------------------------------------------------*/
+	</returns>
+	<remarks>
+		Now stops on invalid characters.
+	</remarks>
+	\**----------------------------------------------------------------------**/
 	
 	stock hexstr(string[])
 	{
@@ -494,30 +501,41 @@ stock isnumeric(str[])
 			val,
 			i;
 		if (string[0] == '0' && string[1] | 0x20 == 'x') i = 2;
-		while (string[i])
+		for ( ; ; )
 		{
-			ret <<= 4;
-			val = string[i++] - '0';
-			if (val > 0x09) val -= 0x07;
-			if (val > 0x0F) val -= 0x20;
-			if (val < 0x01) continue;
-			if (val < 0x10) ret += val;
+			switch ((val = string[i++]))
+			{
+				case '0' .. '9':
+				{
+					val -= '0';
+				}
+				case 'a' .. 'f':
+				{
+					val -= 'a' - 10;
+				}
+				case 'A' .. 'F':
+				{
+					val -= 'A' - 10;
+				}
+				default: break;
+			}
+			ret = ret << 4 | val;
 		}
 		return ret;
 	}
 	
-	/*------------------------------------------------------------------------*-
-	Function:
-		boolstr
-	Params:
-		string[] - String to try convert to a boolean.
-	Return:
+	/**----------------------------------------------------------------------**\
+	<summary>boolstr</summary>
+	<param name="	string[]">String to try convert to a boolean.</param>
+	<returns>
 		bool: passed boolean.
-	Notes:
+	</returns>
+	<remarks>
 		This can take a number of ways of representing booleans - 0, false and
 		nothing there.  Anything not one of those things (false is not case
 		sensitive) is assumed true.
-	-*------------------------------------------------------------------------*/
+	</remarks>
+	\**----------------------------------------------------------------------**/
 	
 	stock bool:boolstr(string[])
 	{
@@ -525,17 +543,17 @@ stock isnumeric(str[])
 		return true;
 	}
 	
-	/*------------------------------------------------------------------------*-
-	Function:
-		binstr
-	Params:
-		string[] - String to try convert to a boolean.
-	Return:
+	/**----------------------------------------------------------------------**\
+	<summary>binstr</summary>
+	<param name="	string[]">String to try convert to a boolean.</param>
+	<returns>
 		bool: passed boolean.
-	Notes:
+	</returns>
+	<remarks>
 		This takes a value in 0110101 (boolean) format and returns it as a
 		regular value.
-	-*------------------------------------------------------------------------*/
+	</remarks>
+	\**----------------------------------------------------------------------**/
 	
 	stock binstr(string[])
 	{
@@ -582,23 +600,31 @@ stock isnumeric(str[])
 	}
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
+/**--------------------------------------------------------------------------**\
+<summary>
 	memset
 	rawMemset
-Params:
-	arr[], iAddress - Array or address to set to a value.
-	iSize - Number of cells to fill.
-	iValue - What to set the cells to.
-Return:
+</summary>
+<param name="arr[], iAddress">Array or address to set to a value.</param>
+<param name="iSize">Number of cells to fill.</param>
+<param name="iValue">What to set the cells to.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Based on code by Slice:
 	
 	http://forum.sa-mp.com/showthread.php?p=1606781#post1606781
 	
 	Modified to use binary flags instead of a loop.
-\*----------------------------------------------------------------------------*/
+	
+	"memset" takes an array, the size of the array, and a value to fill it with
+	and sets the whole array to that value.
+	
+	"rawmemset" is similar, but takes an AMX data segment address instead and
+	the size is in bytes, not cells.
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock memset(arr[], size = sizeof (arr), val = 0)
 {
@@ -696,15 +722,15 @@ stock rawMemset(iAddress, iSize, iValue)
 	}
 }
 
-#if !defined ReturnPlayerName
-	stock ReturnPlayerName(playerid)
-	{
-		new
-			str[MAX_PLAYER_NAME];
-		GetPlayerName(playerid, str, sizeof (str));
-		return str;
-	}
-#endif
+//#if !defined ReturnPlayerName
+stock ReturnPlayerName(playerid)
+{
+	new
+		str[MAX_PLAYER_NAME];
+	GetPlayerName(playerid, str, sizeof (str));
+	return str;
+}
+//#endif
 
 stock ftouch(const filename[])
 {

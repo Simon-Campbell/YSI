@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					===================================
 					 y_inline - PAWN inline functions.
 					===================================
@@ -61,7 +61,8 @@ Changelog:
 		Changed the precedence of "using" types.
 	19/09/11:
 		First version
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #include "internal\y_version"
 #include "internal\y_funcinc"
@@ -113,12 +114,18 @@ Changelog:
 // Defer adding the close bracket till after other macros have run.
 #define _Y_INLINE_END )
 
+////////////////////////////////////////////////////////////////////////////////
+////    IF THESE EVER CHANGE (CAN'T SEE WHY), UPDATE _Inline_GetOpCodesX    ////
+////////////////////////////////////////////////////////////////////////////////
 #define INLINE_LOOP_PATTERN_0 0xA1E7C013
 #define INLINE_LOOP_PATTERN_1 0x42424242
 #define INLINE_LOOP_PATTERN_2 0x13C0E7A1
 #define INLINE_LOOP_PATTERN_3 0x21495359
+////////////////////////////////////////////////////////////////////////////////
+////    IF THESE EVER CHANGE (CAN'T SEE WHY), UPDATE _Inline_GetOpCodesX    ////
+////////////////////////////////////////////////////////////////////////////////
 
-#define INLINE_LOOP_PATTERNS INLINE_LOOP_PATTERN_0,INLINE_LOOP_PATTERN_1,INLINE_LOOP_PATTERN_2,INLINE_LOOP_PATTERN_3
+//#define INLINE_LOOP_PATTERNS INLINE_LOOP_PATTERN_0,INLINE_LOOP_PATTERN_1,INLINE_LOOP_PATTERN_2,INLINE_LOOP_PATTERN_3
 
 // This code uses a specialisation of my "tag macros" technique, embedding the
 // macro names in to a string instead of using them as tags.  This does mean
@@ -136,13 +143,13 @@ Changelog:
 //  3 - Cells in the enclosing function at this point (passed and declared).
 //  4 - Parameters format.
 //  
-#define inline%0(%1) new %0__;static const%0[]=#%0":..."#_YI@CP;for(new%1,,;Inline_Loop(INLINE_LOOP_PATTERNS,%0__,%0);)
+#define inline%0(%1) new %0__;static const%0[]=#%0":..."#_YI@CP;for(new%1,,;Inline_Loop(.y=%0__,.f=%0);)
 
 #define callback:%0) const callback_tag:callback_check:%0£££
 #define callback_tag:callback_check:%0,%1£££ callback_tag:%0[],%1)
 #define callback_check:%0£££ %0[])
 
-#define anonymous%0(%1) Q@=#_YI@CA;for(new%1,,;Inline_Loop(INLINE_LOOP_PATTERNS,%0__,":...:"#);)
+#define anonymous%0(%1) new __anonVar;Q@=#_YI@CA;for(new%1,,;Inline_Loop(.y=__anonVar,.f=":...:"#);)
 
 #define _YI@CP;for(new%0,%1; @Ia#@Ib#@Ic#@Id#:;for(new @Iz|||%0|||%1;
 
@@ -219,6 +226,7 @@ static stock Inline_DoFormat(data[])
 		//len = 0, //strlen(data),
 		//bit = 1,
 		total = 1;
+	//printf("%s", data);
 	//P:C(if (len - pos - 1 > 30) P:E("Inline functions only support up to 30 parameters"););
 	if (pos != -1)
 	{
@@ -237,7 +245,7 @@ static stock Inline_DoFormat(data[])
 				}
 				default:
 				{
-					total = total << 1 | 1;
+					total = (total << 1) | 1;
 				}
 			}
 		}
@@ -245,6 +253,7 @@ static stock Inline_DoFormat(data[])
 	// Store the compressed format, also instantly end the string.
 	data[0] = ~total;
 	data[1] = '\0';
+	//printf("%x", data[0]);
 	return 1;
 }
 
@@ -284,7 +293,7 @@ static stock Inline_FindFunction(const data[], const name[], address)
 				{
 					ret = value;
 					candidate = tmp;
-					printf("candidate: %x", ret);
+					//printf("candidate: %x", ret);
 				}
 			}
 			value = data[len + 1];
@@ -306,9 +315,11 @@ static stock Inline_FindAnonymous(const data[], address)
 	#emit LOAD.S.pri data
 	#emit STOR.S.pri value
 	// Check the "pointer" is valid.
+	//printf("Inline_FindAnonymous %s %d %d", data, address, value);
 	while (value != -1)
 	{
 		// Check if this is anonymous.
+		//printf("%d %s %d %d %d", value, data, address, ret, candidate);
 		if (data[0] == ':')
 		{
 			// Found a candidate.
@@ -322,11 +333,13 @@ static stock Inline_FindAnonymous(const data[], address)
 				candidate = tmp;
 			}
 		}
-		value = data[strlen(data) - 3];
+		//printf("%d %d %d,%d,%d,%d,%d", strlen(data), strlen(data) - 4, data[0], data[1], data[2], data[3], data[4]);
+		value = data[strlen(data) - 4];
 		// Move on to the next "pointer".
 		#emit LOAD.S.pri value
 		#emit STOR.S.pri data
 	}
+	//printf("Found anon: %d", ret);
 	return ret;
 }
 
@@ -342,30 +355,181 @@ public _Inline_FixCompiler@@()
 	//memcpy("", "", 0, 0, 0);
 }
 
+forward _Inline_GetOpCodesX();
+
+public _Inline_GetOpCodesX()
+{
+	Inline_Loop();
+	return 0;
+}
+
+/*
+CODE 47	; 835a0
+	proc	; _Inline_GetOpCodesX
+	; line 168
+	; line 169
+	push.c 229b24
+	;$par
+	zero.pri
+	heap 4
+	stor.i
+	push.alt
+	;$par
+	push.c 21495359
+	;$par
+	push.c 13c0e7a1
+	;$par
+	push.c 42424242
+	;$par
+	push.c a1e7c013
+	;$par
+	push.c 18
+	call Inline_Loop
+	heap fffffffc
+	;$exp
+	zero.pri
+	retn
+*/
+/*
+CODE 47	; a333c
+	proc	; _Inline_GetOpCodesX
+	; line 168
+	break	; a3340
+	; line 169
+	break	; a3344
+	const.pri 229b24
+	push.pri
+	;$par
+	const.pri 0
+	heap 4
+	stor.i
+	move.pri
+	push.pri
+	;$par
+	const.pri 21495359
+	push.pri
+	;$par
+	const.pri 13c0e7a1
+	push.pri
+	;$par
+	const.pri 42424242
+	push.pri
+	;$par
+	const.pri a1e7c013
+	push.pri
+	;$par
+	push.c 18
+	call Inline_Loop
+	heap fffffffc
+	;$exp
+	zero.pri
+	retn
+*/
+
 hook OnScriptInit()
 {
+	P:2("Inline_OnScriptInit");
 	static
-		sSearch[] =
-			{
-				AMX_PUSH_C, INLINE_LOOP_PATTERN_3,
-				AMX_PUSH_C, INLINE_LOOP_PATTERN_2,
-				AMX_PUSH_C, INLINE_LOOP_PATTERN_1,
-				AMX_PUSH_C, INLINE_LOOP_PATTERN_0,
-				AMX_PUSH_C, 0x18,
-				AMX_CALL
-			};
+		sAddr,
+		sType = 0,
+		sSearch[15];
+	if (!sType)
+	{
+		// We no longer need explicit assembly code to search for - we just
+		// extract the exact code from "_Inline_GetOpCodesX".  We also need to
+		// later ignore that call to "Inline_Loop" in the search codes so it
+		// doesn't think that reference dummy is a real inline function.
+		new
+			addr;
+		// Get the data address of the function.
+		#emit CONST.pri  _Inline_GetOpCodesX
+		#emit LOAD.alt   AMX_HEADER_COD
+		#emit ADD
+		#emit STOR.S.pri addr
+		if (AMX_Read(addr + 9 * 4) == INLINE_LOOP_PATTERN_3)
+		{
+			sAddr = addr + 8 * 4;
+			P:5("Inline_OnScriptInit: Loading type 1");
+			AMX_ReadArray(sAddr, sSearch, 11);
+			P:7("Inline_OnScriptInit: Loaded type 1");
+			sType = 1;
+		}
+		else if (AMX_Read(addr + 10 * 4) == INLINE_LOOP_PATTERN_3)
+		{
+			sAddr = addr + 9 * 4;
+			P:5("Inline_OnScriptInit: Loading type 3");
+			AMX_ReadArray(sAddr, sSearch, 11);
+			P:7("Inline_OnScriptInit: Loaded type 3");
+			sType = 3;
+		}
+		else if (AMX_Read(addr + 14 * 4) == INLINE_LOOP_PATTERN_3)
+		{
+			sAddr = addr + 13 * 4;
+			P:5("Inline_OnScriptInit: Loading type 2");
+			AMX_ReadArray(sAddr, sSearch, 15);
+			P:7("Inline_OnScriptInit: Loaded type 2");
+			sType = 2;
+		}
+		else
+		{
+			P:E("Could not determine pattern type in y_inline");
+			sType = -1;
+		}
+	}
+	P:7("Inline_OnScriptInit: Beginning search.");
+	switch (sType)
+	{
+		case 1, 3:
+		{
+			Inline_DoSearch(sSearch, 3, 11, sAddr);
+		}
+		case 2:
+		{
+			Inline_DoSearch(sSearch, 5, 15, sAddr);
+		}
+	}
+	
+	// This could be Linux (we just don't know) - test by extracting the
+	// currently used OpCodes from another function.
+	// Different optimisation levels produce different sensibilities of code.
+	/*if (Inline_DoSearch(sSearch1, 3) == -1)
+	{
+		// Pass the number of extra instructions before this code block.
+		Inline_DoSearch(sSearch2, 5);
+	}*/
+	/*new
+		p0 = Inline_DoSearch(sSearch1),
+		// I could actually detect compilation flags in this way!
+		p1 = Inline_DoSearch(sSearch2);
+	if (p0 == -1 && p1 != -1)
+	{
+		// Compiled with "-d3".  That's interesting but ultimately pointless.
+		// And I can't detect this if they have no inline functions.
+	}*/
+}
+
+static stock Inline_DoSearch(sSearch[], neg, size, ignore)
+{
+	P:4("Inline_DoSearch called");
 	new
+		//str[32],
 		addr,
 		data,
-		func,
+		func;
+	static
 		last = -1;
-	while (AMX_TraceCode(sSearch, addr, func))
+	//printf("FIND FUNC: %s", sSearch);
+	//while (AMX_TraceCode(sSearch, addr, func, size))
+	for ( ; AMX_TraceCode(sSearch, addr, func, size); addr -= AMX_HEADER_COD - 24)
 	{
+		if (func == ignore) continue;
+		P:4("Inline_DoSearch: %d %d %d", addr, func, size);
 		// Get the function return address (make sure "pri" is always non-zero).
-		func = addr + (12 * 4);
+		func = addr + ((size + 1) * 4);
 		//printf("stored function at %x", func);
 		// Get the address of the last parameter.
-		addr += (AMX_HEADER_COD - 12);
+		addr += (AMX_HEADER_COD - (neg * 4));
+		//printf("FOUND FUNC: %d", addr);
 		// Get the value of the last parameter.
 		#emit LREF.S.pri        addr
 		#emit STOR.S.pri        data
@@ -373,7 +537,6 @@ hook OnScriptInit()
 		// both the address and contents of the loaded string!  Amazingly it
 		// worked for anonymous functions too...
 		//#emit PUSH.S            data
-		//printf("data = %08x, %s", data);
 		//#emit POP.pri
 		// Anyway, now we need to see if this is a named or anonymous function
 		// and plan accordingly.  We don't need all the complex code of the
@@ -398,6 +561,7 @@ hook OnScriptInit()
 		#emit SYSREQ.C       strfind
 		#emit STOR.S.pri     pos
 		#emit STACK          20
+		//printf("pos = %d, %d", pos, last);
 		if (pos != -1)
 		{
 			if (last == -1)
@@ -407,7 +571,7 @@ hook OnScriptInit()
 			else
 			{
 				#emit LOAD.S.pri data
-				#emit SREF.S.pri last
+				#emit SREF.pri   last
 			}
 			// Equivalent to: "data[pos + 1] = -1;" (1 cell = 4 bytes).
 			data += pos * 4 + 4;
@@ -416,6 +580,7 @@ hook OnScriptInit()
 			// Equivalent to: "data[pos + 2] = func;"
 			last = data;
 			data += 4;
+			//printf("pos = %d, %d", data, func);
 			#emit LOAD.S.pri   func
 			#emit SREF.S.pri   data
 			// Now find and compress the format specifier (backwards).
@@ -430,19 +595,22 @@ hook OnScriptInit()
 			#emit PUSH.pri
 			#emit CONST.pri      Inline_DoFormat
 			#emit SCTRL          6
+			//pp(data - 8, str);
 		}
-		// Move on to find the next value.
-		addr -= (AMX_HEADER_COD - 16);
+		// Move on to find the next value.  24 is larger than both 12 and 20,
+		// but is still a little hard-coded to the known code types.
 	}
+	return last;
 }
 
-stock Inline_Loop(p0, p1, p2, p3, &__yil, volatile const format[])
+stock Inline_Loop(p0 = INLINE_LOOP_PATTERN_0, p1 = INLINE_LOOP_PATTERN_1, p2 = INLINE_LOOP_PATTERN_2, p3 = INLINE_LOOP_PATTERN_3, &y = 0, volatile const f[] = "")
+//stock Inline_Loop(p0, p1, p2, p3, &__yil, volatile const format[])
 {
 	#pragma unused p0, p1, p2, p3
 	//#emit LOAD.S.pri    4
 	//#emit STOR.S.pri    p0
 	//printf("ret: %d %d", p0, YSI_g_sInInline);
-	if (__yil)
+	if (y)
 	{
 		/*#emit LOAD.S.alt 0
 		#emit MOVE.pri
@@ -465,7 +633,7 @@ stock Inline_Loop(p0, p1, p2, p3, &__yil, volatile const format[])
 		#emit MOVE.pri
 		#emit SCTRL      6
 	}
-	__yil = 1;
+	y = 1;
 	static const
 		scSearch[] = ":";
 	// This function needs to be modified to store the stack size at this point
@@ -476,7 +644,7 @@ stock Inline_Loop(p0, p1, p2, p3, &__yil, volatile const format[])
 	#emit ADD.C         8
 	#emit LOAD.I
 	#emit PUSH.pri
-	// Get the local variable sizes.  Need to allocate the data somewhere.  First
+	// Get the local variable sizes.  Need to allocate the data somewhere.
 	#emit LCTRL         5
 	#emit LOAD.S.alt    0
 	// Subtract the parameters passed to this function.
@@ -487,7 +655,7 @@ stock Inline_Loop(p0, p1, p2, p3, &__yil, volatile const format[])
 	#emit PUSH.C        0
 	#emit PUSH.C        0
 	#emit PUSH.C        scSearch
-	#emit PUSH.S        format
+	#emit PUSH.S        f
 	#emit PUSH.C        16
 	#emit SYSREQ.C      strfind
 	#emit STACK         20
@@ -495,15 +663,15 @@ stock Inline_Loop(p0, p1, p2, p3, &__yil, volatile const format[])
 	#emit CONST.alt     4
 	#emit SMUL
 	#emit ADD.C         12
-	#emit LOAD.S.alt    format
+	#emit LOAD.S.alt    f
 	#emit ADD
-	#emit STOR.S.pri    format
+	#emit STOR.S.pri    f
 	#emit POP.alt
 	#emit SHL.C.alt     6
 	#emit POP.pri
 	#emit SHR.C.pri     2
 	#emit ADD
-	#emit SREF.S.pri    format
+	#emit SREF.S.pri    f
 	return 0;
 }
 
@@ -524,7 +692,7 @@ stock Callback_Get(callback:name, result[E_CALLBACK_DATA], expect = -1)
 		#emit LOAD.I
 		// Call the function.
 		#emit PUSH.pri
-		#emit PUSH.S     name
+		//#emit PUSH.S     name
 		#emit PUSH       YSI_g_sFirstFunc
 		#emit PUSH.C     8
 		#emit LCTRL      6
@@ -543,14 +711,15 @@ stock Callback_Get(callback:name, result[E_CALLBACK_DATA], expect = -1)
 		#emit STOR.S.pri pos
 		result[E_CALLBACK_DATA_POINTER] = pos;
 		// Save the function parameters.
-		++func;
+		func += 4;
 		#emit LREF.S.pri func
 		#emit STOR.S.pri pos
-		result[E_CALLBACK_DATA_FLAGS]  = e_CALLBACK_FLAGS:pos;
-		++func;
+		result[E_CALLBACK_DATA_FLAGS] = e_CALLBACK_FLAGS:pos;
+		func += 4;
 		#emit LREF.S.pri func
 		#emit STOR.S.pri pos
-		result[E_CALLBACK_DATA_FORMAT]  = pos;
+		result[E_CALLBACK_DATA_FORMAT] = pos;
+		//printf("%x %x", expect, pos);
 		if (expect != -1 && pos != expect)
 		{
 			P:E("Format specifier didn't match on anonymous function");
@@ -627,25 +796,26 @@ stock Callback_Get(callback:name, result[E_CALLBACK_DATA], expect = -1)
 				func += strlen(name) * 4 + 2 * 4;
 				P:5("Callback_Get: inline/public found: %08x", func);
 				//#emit LREF.S.pri func
-				pos = 444;
+				//pos = 444;
 				#emit LOAD.S.pri func
 				#emit LOAD.I
 				#emit STOR.S.pri pos
-				printf("%d", pos);
+				//printf("%d", pos);
 				result[E_CALLBACK_DATA_POINTER] = pos;
 				// Save the function parameters.
-				++func;
+				func += 4;
 				#emit LREF.S.pri func
 				#emit STOR.S.pri pos
-				printf("%d", pos);
+				//printf("%d", pos);
 				result[E_CALLBACK_DATA_FLAGS]  = e_CALLBACK_FLAGS:pos;
 				// Save the function format.
-				++func;
-				--pos;
+				func += 4;
+				//--pos;
 				#emit LREF.S.pri func
 				#emit STOR.S.pri pos
-				printf("%d", pos);
+				//printf("%d", pos);
 				result[E_CALLBACK_DATA_FORMAT]  = pos;
+				P:5("Callback_Get: Getting inline %s format", name);
 				if (expect != -1 && pos != expect)
 				{
 					P:E("Format specifier didn't match on inline function %s: %04x%04x != %04x%04x", name, pos >>> 16, pos & 0xFFFF, expect >>> 16, expect & 0xFFFF);
@@ -682,6 +852,7 @@ stock Callback_Get(callback:name, result[E_CALLBACK_DATA], expect = -1)
 			new
 				form = name[pos + 4];
 			result[E_CALLBACK_DATA_FORMAT]  = form;
+			P:5("Callback_Get: Getting public %s format", name);
 			if (expect != -1 && form != expect)
 			{
 				P:E("Format specifier didn't match on inline function %s", name);
@@ -713,6 +884,7 @@ stock Callback_Get(callback:name, result[E_CALLBACK_DATA], expect = -1)
 	// Now we need to somehow store all this data somewhere (including, for
 	// speed, the extra data involved in calling a function).  Here "pos" is the
 	// number of bytes pushed to the owning function.
+	P:6("%04x%04x %04x%04x", _:result[E_CALLBACK_DATA_FLAGS] >>> 16, _:result[E_CALLBACK_DATA_FLAGS] & 0xFFFF, (num >>> 8), (num << 8) & 0xFFFF);
 	result[E_CALLBACK_DATA_FLAGS] -= e_CALLBACK_FLAGS:(num << 8);
 	pos = _:result[E_CALLBACK_DATA_FLAGS];
 	// Get the size of the closure.
@@ -752,6 +924,7 @@ stock Callback_Call(const result[E_CALLBACK_DATA], GLOBAL_TAG_TYPES:...)
 {
 	// Call the function with the given data.  We need some serious stack
 	// manipulation skills in here to make it all work.
+	//printf("Calling function at %d", _:result[E_CALLBACK_DATA_FLAGS]);
 	if (result[E_CALLBACK_DATA_FLAGS] & e_CALLBACK_FLAGS_PUBLIC)
 	{
 		// I think I've got an even better way.  NOPE!  None of this code will
@@ -828,6 +1001,7 @@ stock Callback_Call(const result[E_CALLBACK_DATA], GLOBAL_TAG_TYPES:...)
 			//YSI_g_sInInline = result[E_CALLBACK_DATA_POINTER];
 		//	ininline = YSI_g_sInInline;
 		YSI_g_sInInline = result[E_CALLBACK_DATA_POINTER];
+		//printf("Calling function at 0x%08x", YSI_g_sInInline);
 		size = ((size & 0xFF) + (size >>> 8) + 3) * 4;
 		#emit LCTRL      4
 		#emit STOR.S.pri stack
@@ -953,7 +1127,7 @@ stock Callback_Call(const result[E_CALLBACK_DATA], GLOBAL_TAG_TYPES:...)
 #define @Rx:@Ry:@Rw:@Rv:@Ru:(%0s,%1) @Rx:@Ry:@Rw:@Rv:@Ru:(%0,%1+1)
 #define @Ry:@Rw:@Rv:@Ru:(,%1) ~(1<<%1)*/
 
-// This is very similar to Callback_Call, but takes an array of parameters
+// This is very similar to Callback_Call, but takes an array of ADDRESSES
 // instead of normal parameters.  This is designed to help support some
 // experimental OO code I was working on...
 stock Callback_Array(const result[E_CALLBACK_DATA], const params[])
@@ -1093,6 +1267,216 @@ stock Callback_Array(const result[E_CALLBACK_DATA], const params[])
 		#emit STOR.S.pri tmp
 		num *= 4;
 		addr += num;
+		// "addr" now contains the params stack address, "stack" contains the
+		// starting stack address.  This code technically pushes an incorrect
+		// destination size (it's 4x too big), but as the bytes to copy is
+		// smaller this is not important.
+		// Set the frame pointer.
+		size = _:result[E_CALLBACK_DATA_FLAGS];
+		#emit LOAD.S.pri size
+		#emit SHR.C.pri  8
+		#emit SHL.C.pri  2 // NOT SHR 6
+		#emit LOAD.S.alt addr
+		#emit ADD
+		#emit STOR.S.pri tmp
+		// Copy the data.
+		size = ((size & 0xFF) + (size >>> 8) + 3) * 4;
+		num = _:result[E_CALLBACK_DATA_ALLOC];
+		#emit LOAD.S.pri size
+		#emit PUSH.pri
+		#emit PUSH.pri
+		#emit PUSH.C     0
+		#emit CONST.alt  YSI_gMallocMemory
+		#emit LOAD.S.pri num
+		#emit IDXADDR
+		#emit PUSH.pri
+		#emit PUSH.S     addr
+		#emit PUSH.C     20
+		#emit SYSREQ.C   memcpy
+		#emit STACK      24
+		// Store the return frame.
+		#emit LOAD.S.alt tmp
+		#emit LCTRL      5
+		#emit STOR.I
+		#emit MOVE.pri
+		#emit ADD.C      4
+		#emit MOVE.alt
+		// Get the return address and call the function.
+		#emit LCTRL      6
+		#emit ADD.C      48              // 8
+		#emit STOR.I                     // 12
+		#emit LOAD.alt   YSI_g_sInInline // 20
+		#emit LOAD.S.pri tmp             // 28
+		#emit SCTRL      5               // 36
+		#emit MOVE.pri                   // 40
+		#emit SCTRL      6               // 48
+		// Restore the stack.
+		//printf("one");
+		#emit LOAD.S.pri stack
+		#emit SCTRL      4
+		//printf("two");
+		//YSI_g_sInInline = ininline;
+	}
+}
+
+// This is very similar to Callback_Call, but takes an allocated block of stack.
+stock Callback_Block(const result[E_CALLBACK_DATA], const params[], num)
+{
+	#pragma unused params
+	// Call the function with the given data.  We need some serious stack
+	// manipulation skills in here to make it all work.
+	if (result[E_CALLBACK_DATA_FLAGS] & e_CALLBACK_FLAGS_PUBLIC)
+	{
+		// I think I've got an even better way.  NOPE!  None of this code will
+		// work because all the parameters are passed by reference, not by
+		// value!  This is VERY VERY bad!  D'oh!  Good thing I kept a copy of
+		// the old code!  Shame, this would have been very elegant.  Sweet, it
+		// seemed to work as well!  Maybe I could just do some similar in-line
+		// variable modifications.
+		new
+			par,
+			pointer = result[E_CALLBACK_DATA_POINTER],
+			mask = result[E_CALLBACK_DATA_FORMAT];
+		// Destroy one parameter.
+		//#emit PUSH.S          8
+		#emit LOAD.S.alt      8
+		#emit PUSH.alt
+		//#emit ADD.C      0xFFFFFFFC
+		//#emit PUSH.pri
+		// Move the return address.
+		#emit LOAD.S.pri      4
+		#emit STOR.S.pri      8
+		// Move the frame.
+		#emit LOAD.S.pri      0
+		#emit STOR.S.pri      4
+		// Fix the parameters.
+		#emit LCTRL           5
+		#emit ADD
+		#emit ADD.C           12
+		#emit STOR.S.pri      par
+		// Get the jump address.
+		//while (mask != ~1)
+		// If no format has been provided, just guess and pass every parameter
+		// by reference (as they are passed to here).
+		while (mask != -1)
+		{
+			par -= 4;
+			if (!(mask & 1))
+			{
+				#emit LREF.S.pri      par
+				#emit LOAD.I
+				#emit SREF.S.pri      par
+			}
+			mask >>= 1;
+		}
+		//#emit LOAD.S.pri      8
+		#emit POP.pri
+		#emit ADD.C           0xFFFFFFFC
+		#emit STOR.S.pri      12
+		//#emit ADD.C      4
+		//#emit ADD.C      4
+		//#emit MOVE.alt
+		#emit LOAD.S.alt      pointer
+		// Mangle the stack (no variables from here).
+		#emit LCTRL           5
+		#emit ADD.C           4
+		#emit SCTRL           4
+		#emit SCTRL           5
+		// Jump to new code (after "PROC").
+		#emit MOVE.pri
+		#emit ADD.C           4
+		#emit SCTRL           6
+		// Will never be called.
+		//#emit RETN
+	}
+	else
+	{
+		new
+			size = _:result[E_CALLBACK_DATA_FLAGS],
+			//num  = 0,
+			stack,
+			//mask = 0x80000000,
+			addr,
+			tmp;
+			//YSI_g_sInInline = result[E_CALLBACK_DATA_POINTER];
+		//	ininline = YSI_g_sInInline;
+		YSI_g_sInInline = result[E_CALLBACK_DATA_POINTER];
+		size = ((size & 0xFF) + (size >>> 8) + 3) * 4;
+		#emit LCTRL      4
+		#emit STOR.S.pri stack
+		#emit LOAD.S.alt size
+		#emit SUB
+		#emit STOR.S.pri addr
+		// Add more data for additional parameters.
+		#emit SCTRL      4
+		//#emit LCTRL      4
+		size = result[E_CALLBACK_DATA_FORMAT];
+		//#emit LCTRL      5
+		//#emit ADD.C      16
+		//#emit LOAD.I
+		//#emit STOR.S.pri tmp
+		// OK, now the fun bit!
+		//num = Malloc_SlotSize(params) - 2;
+		addr -= num * 4;
+		// Increase the stack size.
+		#emit LOAD.S.pri addr
+		#emit SCTRL      4
+		// Copy the data.
+		#emit LOAD.S.pri num
+		// Destination size.
+		#emit PUSH.pri
+		#emit SMUL.C     4
+		// Number of bytes.
+		#emit PUSH.pri
+		// 0.
+		#emit PUSH.C     0
+		#emit PUSH.S     params
+		#emit PUSH.S     addr
+		#emit PUSH.C     20
+		#emit SYSREQ.C   memcpy
+		#emit STACK      24
+		//tmp = 
+		/*while (size & mask)
+		{
+			mask >>>= 1;
+		}
+		mask >>>= 1;
+		while (mask)
+		{
+			if (size & mask)
+			{
+				num += YSI_MAX_STRING;
+				addr -= YSI_MAX_STRING * 4;
+				//printf("copying string");
+				#emit LOAD.S.pri addr
+				#emit SCTRL      4
+				// Copy the data.
+				#emit PUSH.C     130
+				#emit PUSH.C     520
+				#emit PUSH.C     0
+				#emit LREF.S.pri tmp
+				#emit PUSH.pri
+				#emit PUSH.S     addr
+				#emit PUSH.C     20
+				#emit SYSREQ.C   memcpy
+				#emit STACK      24
+				//printf("finished");
+			}
+			else
+			{
+				num += 1;
+				addr -= 1 * 4;
+				#emit LREF.S.pri tmp
+				#emit LOAD.I
+				#emit PUSH.pri
+			}
+			mask >>>= 1;
+			tmp += 4;
+		}*/
+		#emit LCTRL      5
+		#emit STOR.S.pri tmp
+		//num *= 4;
+		addr += num * 4;
 		// "addr" now contains the params stack address, "stack" contains the
 		// starting stack address.  This code technically pushes an incorrect
 		// destination size (it's 4x too big), but as the bytes to copy is

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					=======================================
 					 y_classes - Advanced class selection! 
 					=======================================
@@ -52,7 +52,8 @@ Version:
 Changelog:
 	29/11/10:
 		First version
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock Class_ResolveGroups(class, Group:forgroup, bool:cp) <YSI_has_groups:y>
 {
@@ -77,6 +78,7 @@ stock Class_ResolveGroups(class, Group:forgroup, bool:cp) <YSI_has_groups:y>
 		{
 			// el.
 		}*/
-		Group_ExclusiveClass(forgroup, class);
+		if (forgroup == Group:-1) Group_ExclusiveClass(GROUP_GLOBAL, class);
+		else Group_ExclusiveClass(forgroup, class);
 	}
 }

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					=================================
 					 y_lock - Lock a server's IP.
 					=================================
@@ -59,7 +59,7 @@ Functions:
 Variables:
 	Global:
 		-
-\*----------------------------------------------------------------------------*/
+\**--------------------------------------------------------------------------**/
 
 #if defined _inc_y_version
 	#error YSI\y_lock must be the first include if you want to use it.
@@ -71,7 +71,11 @@ Variables:
 #endif
 
 #if !defined BIND_IP
-	#define BIND_IP MAKE_LOCK_IP(127.0.0.1)
+	#if defined Y_LOCK_IP
+		#define BIND_IP MAKE_LOCK_IP(Y_LOCK_IP)
+	#else
+		#define BIND_IP MAKE_LOCK_IP(127.0.0.1)
+	#endif
 #endif
 
 // MASSIVE reliance on operator precedence here!

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					  ===================================
 					   y_plugins - Used plugin detection 
 					  ===================================
@@ -37,6 +37,7 @@ Legal:
 		yom - French translation.
 		50p - Polish translation.
 		Zamaroht - Spanish translation.
+		Los - Portuguese translation.
 		Dracoblue, sintax, mabako, Xtreme, other coders - Producing other modes
 			for me to strive to better.
 		Pixels^ - Running XScripters where the idea was born.
@@ -47,13 +48,19 @@ Legal:
 		Kye/Kalcor - SA:MP.
 		SA:MP Team past, present and future - SA:MP.
 	
+	Optional plugins:
+		Gamer_Z - GPS.
+		Incognito - Streamer.
+		Me - sscanf2, fixes2, Whirlpool.
+	
 Version:
 	1.0
 Changelog:
 	21/10/12:
 		First version
-\*----------------------------------------------------------------------------*/
+\**--------------------------------------------------------------------------**/
 
+// All the code in here relies on detecting FEATURES, not FILENAMES.
 #if defined Streamer_IncludeFileVersion
 	#define _YSI_PLUGINS_STREAMER
 	
@@ -84,8 +91,39 @@ Changelog:
 	#if !defined IPS_MAX_AREAS
 		#define IPS_MAX_AREAS (1000)
 	#endif
+	#include <streamer>
 #endif
 
 #if defined WP_Hash
 	#define _YSI_PLUGINS_WHIRLPOOL
 #endif
+
+//#if defined gps_AddPlayer
+//	#define _YSI_PLUGINS_GPS
+//	// This plugin was included later on in the script and found first time,
+//	// include it here in the second compile pass.
+//	#include <RouteConnector>
+//	#include "y_gamerzps"
+//#endif
+
+#if defined SetTimerEx_
+	#define _YSI_PLUGINS_FIXES_2
+#endif
+
+/*
+#if defined mysql_function_query
+	// BlueG R7 MySQL
+	#define _YSI_PLUGINS_MYSQL 7
+#elseif defined mysql_init
+	// StrickenKid MySQL
+	#define _YSI_PLUGINS_MYSQL 1
+#elseif defined mysql_debug
+	// BlueG R5/R6 MySQL
+	#define _YSI_PLUGINS_MYSQL 6
+#else
+	// No MySQL
+*/
+	#define _YSI_PLUGINS_MYSQL 0
+/*
+#endif
+*/

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
                               ===================
                                YSI - Master Core
                               ===================
@@ -50,6 +50,9 @@ Legal:
 Version:
 	0.2
 Changelog:
+	03/01/13:
+		Added "@foreign" and "@global" for EXPLICIT Master_Caller use.
+		Added "void:" return tag to simplify common code.
 	07/08/10:
 		Split in to y_masteronce.
 		Added assembly for publics scanning.
@@ -107,17 +110,20 @@ Operators:
 	-
 Natives:
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
+
+#define _Y_MASTER_ONCE
 
 // These parts should only be defined once ever.  This code is not dependent on
 // the current MASTER value, it's all generic.
 
-#include "y_version"
-#include "..\y_debug"
-#include "..\y_hooks"
-#include "y_shortfunc"
+#include "internal\y_version"
+#include "y_debug"
+#include "y_hooks"
+#include "internal\y_shortfunc"
 
-#include "y_natives"
+#include "internal\y_natives"
 
 #define _YSIM_COMPARE -1
 
@@ -158,7 +164,6 @@ Natives:
 #define RF@vcp RF@pcv
 #define RF@vp  RF@pv
 #define RF@cv  RF@vc
-//#define RF@nv  RF@vn
 
 #define RF@cpt  RF@pct
 #define RF@tcp  RF@pct
@@ -167,7 +172,6 @@ Natives:
 #define RF@ptc  RF@pct
 #define RF@tp  RF@pt
 #define RF@tc  RF@ct
-//#define RF@tn  RF@nt
 
 #define mhook master_hook
 
@@ -177,26 +181,45 @@ forward Master_OnScriptClose(script);
 // These are the macros used by y_master for the recursive function definition
 // structure, but they are not used unless a cloud-based "foreign" or "global"
 // are used.
-// "foreign" declaration.
-#define @Zs:@Za:@Zd:#%0#%1|||%2string:%3[%4]|||%5,%6) @Zs:@Za:@Zd:#%0s#%1,@Ze:%3|||%5|||%6)
-#define @Za:@Zd:#%0#%1|||%3[%4]|||%5,%6) @Zs:@Za:@Zd:#%0a#%1,@Ze:%3|||%5|||%6)
-#define @Zd:#%0#%1|||%3|||%5,%6) @Zs:@Za:@Zd:#%0i#%1,@Ze:%3|||%5|||%6)
 
-#define @Ze:%0|||||| @Ze:%0
-#define z,@Ze:||||||) )
+#define W@(@Zu:#%0:%1#,%2);return%3(%8) W@(@Zu:#%1,%2);return%0:%3(%0:%8)
+#define Z@(%0string:i) S@(i)
+#define V@(%0string:%1) F@()
 
-#define _YM@CM:%0,%1) @Zf:@Zs:@Za:@Zd:##z|||%0|||%1)
-
-#define W@(#%0:%1##,%2);%3Z@(i) W@(#%1,%2);return %0:Z@(%0:i)
-#define Z@(%0string:i) S@(i),Q@
 
 // Second "foreign" declaration.
-#define @Zu:Y@();W@(#%0##,_YM@CX:,,);return%1(%2);}%3(%4);%5(%6)<%7> Y@();W@(#%0##,#);return%1(%2);}%3(%4);stock %5(%6)<%7>return @Zv:@Zq:%5&H@();
-//#define @Zu:Y@();W@(#%0##,_YM@CX:,,);return%1(%2);}%3(%4);%5(%6)<%7> Y@();W@(#%0##,#);return%1(%2);}%3(%4);%5(%6)<%7>return @Zv:@Zq:%5&H@();
+//#define @Zu:Y@();W@(#%0##,_YM@CX:,,);return%1(%2);}%3(%4);%5(%6)<%7> Y@();W@(#%0##,#);return%1(%2);}%3(%4);stock %5(%6)<%7>return @Zv:@Zq:%5&H@();
+#define @Zu:#%0,_YM@C%8:,,);return%1(%2);}%5(%6)<%7> @Z%8:#%0,#);return%1(%2);}stock%5(%6)<%7>return @Zv:@Zq:%5&H@()
+//#define @Zu:#%0,_YM@CX:,,) @Zl:#%0,#)
 
-//#define @Zc:%0(#%1:%2##,%3);return%4;
 
+// Second "foreign" declaration.
+// This has been updated to check for arrays, then check if the array is a
+// string, instead of the old method which checked for those separately.
+#define @Zn:@Zo:%2:#%0#%1|||%3[%4]|||%5,%6);%7}%8&H@(%9||| @Zm:@Zr:%2:#%0#%1|||%3|||%5,%6);%7}%8&H@(%9|||
 
+#define @Zm:@Zr:%2:#%0#%1|||%4string:%3|||%5,%6);%7}%8&H@(%9||| @Zn:@Zo:%2:#%0s#%1,%3|||%5|||%6);%7}%8&H@(%9,%3|||
+#define @Zr:%2:#%0#%1|||%3|||%5,%6);%7}%8&H@(%9||| @Zn:@Zo:%2:#%0a#%1,%3|||%5|||%6);%7}%8&H@(%9,%3|||
+
+#define @Zo:%2:#%0#%1|||%3|||%5,%6);%7}%8&H@(%9||| @Zn:@Zo:%2:#%0i#%1,%3|||%5|||%6);%7}%8&H@(%9,%3|||
+
+#define @Zp:%0||||||);%1}%2&H@(,%4||| @Zl:%0);%1}%2&H@(%4
+#define @Zy:%0||||||);%1}%2&H@(,%4||| @Zj:%0);%1}%2&H@(%4
+
+#define _YM@Cl:%0,%1);%2}%3(%9)<%4> @Zn:@Zo:@Zp:##|||%0|||%1);%2}stock%3(%9)<%4>return @Zv:@Zq:%3&H@(|||)
+#define _YM@Cj:%0,%1);%2}%3(%9)<%4> @Zn:@Zo:@Zy:##|||%0|||%1);%2}stock%3(%9)<%4>return @Zv:@Zq:%3&H@(|||)
+
+#define @Zl:%0);%8void:%3(%1);}%5<%6>return%4&%7; %0);}%5<%6>%7;
+#define @Zj:%0);%8void:%3(%1);}%5<%6>return%4&%7; %0);%3(%1);}%5<%6>%7;
+
+#define @Zv:@Zq:%9:%1&H@( %9:@Zw:@Zx:%9&H@(
+
+#define @Zw:@Zx:%0string%2&H@( G@(
+#define @Zx:%0&H@( H@(
+
+#define @Zq:%1&H@( H@(
+
+/*
 // Second "foreign" declaration.
 // This has been updated to check for arrays, then check if the array is a
 // string, instead of the old method which checked for those separately.
@@ -217,84 +240,28 @@ forward Master_OnScriptClose(script);
 #define @Zx:%0&H@( H@(
 
 #define @Zq:%1&H@( H@(
-
-/*#define @Zm:@Zn:@Zo:#%0#%1|||%2string:%3[%4]|||%5,%6);%7}%8H@(%9||| @Zm:@Zn:@Zo:#%0s#%1,@Zp:%3|||%5|||%6);%7}%8H@(%9,%3|||
-#define @Zn:@Zo:#%0#%1|||%3[%4]|||%5,%6);%7}%8H@(%9||| @Zm:@Zn:@Zo:#%0a#%1,@Zp:%3|||%5|||%6);%7}%8H@(%9,%3|||
-#define @Zo:#%0#%1|||%3|||%5,%6);%7}%8H@(%9||| @Zm:@Zn:@Zo:#%0i#%1,@Zp:%3|||%5|||%6);%7}%8H@(%9,%3|||
-
-#define @Zp:%0||||||);%1}%2H@(,%4||| @Zp:%0);%1}%2H@(%4
-#define y,@Zp:||||||);%1}%2H@(,%4||| );%1}%2H@(%4
-
-#define _YM@CX:%0,%1);%2}%8;%3<%4> @Zl:@Zm:@Zn:@Zo:##y|||%0|||%1);%2}%8;%3<%4>return @Zv:@Zq:%3:H@(|||);
-
-#define @Zv:@Zq:%9:%1:H@( %9:@Zw:@Zx:%9:H@(
-
-#define @Zw:@Zx:%0string%2:H@( G@(
-#define @Zx:%0:H@( H@(
-
-//#define @Zv:@Zq:@Zu:%0string%9:%1:%2H@( G@(
-//#define @Zq:%1H@( H@(
-#define @Zq:%1(%2):%3( H@(*/
-//#define @Zu:%0H@( H@(
-
-//#define @Zq:@Zm:@Zn:@Zo:##y|||%0|||%1);%2;} woo%0%1%2
-// HAHA
-//%2}%8;%3:%4return%5H@(|||); %0);%2}%8;%3:%4return%3:H@(|||);
-
-//#define W@(#%0:%1##,%2);%3Z@(i) W@(#%1,%2);return %0:Z@(%0:i)
-//#define Z@(%0string:i) S@(i),Q@
-
-//#define string:
-
-//#define foreign%0(%1); %0(%1)<>{new i=Y@();W@(#%0@##,_YM@CM:%1,,);return Z@(i);}%0@(%1);
-
-/*// "shut-up" declaration.  Make the compiler not complain about <_YCM:m>.
-#define @Zl:@Zm:#%0#%1|||%3[%4]|||%5,%6) @Zs:@Za:@Zd:#%0a#%1,@Ze:%3|||%5|||%6)
-#define @Zm:#%0#%1|||%3|||%5,%6) @Zs:@Za:@Zd:#%0i#%1,@Ze:%3|||%5|||%6)
-
-#define @Ze:%0|||||| @Ze:%0
-#define z,@Ze:||||||) )
-
-#define _YM@CS:%0,%1; @Zl:@Zm:%1;
-
-//#define W@(#%0:%1##,%2);%3Z@(i) W@(#%1,%2);return %0:Z@(%0:i)
-//#define Z@(%0string:i) S@(i),Q@
-
-#define string:*/
-
-// "global" declaration
-
+*/
+// "global" declaration.
 #define @Zt:@Zb:@Zh:@Zi:%0(%1|||%2:%3|||%5,%6) @Zb:@Zh:@Zi:%0(%1|||%3|||%5,%6)
 #define @Zb:@Zh:@Zi:%0(%1|||%3[%4]|||%5,%6) @Zt:@Zb:@Zh:@Zi:%0(%1,%3|||%5|||%6)
 #define @Zh:@Zi:%0(%1|||%3|||%5,%6) @Zt:@Zb:@Zh:@Zi:%0(%1,%3|||%5|||%6)
 
 #define @Zi:%0(,%1||||||) %0(%1)
-//#define @Zj:X@(%0(_YM@CP:,,)) X@(%0())
 
 #define @Zk:_YM@CP:%0(,,) %0()
 
 #define _YM@CP:%0(%1,%2) @Zt:@Zb:@Zh:@Zi:%0(|||%1|||%2)
 
 //#define X@(%0string:%1) R@(%1)
-#define X@(_:@Zk:_YM@CP:%0string:%1(%2)) R@(_:@Zk:_YM@CP:%1(%2))
+#define X@(@Zk:_YM@CP:%0string:%1(%2)) R@(@Zk:_YM@CP:%1(%2))
 
-/*#define @Zt:@Zb:@Zh:%1|||%2:%3|||%5) %1%2:@Zb:@Zh:|||%3|||%5)
-#define @Zb:@Zh:%1|||%3[%4]|||%5,%6) @Zt:@Zb:@Zh:%1@Zi:%3,|||%5|||%6)
-#define @Zh:%1|||%3|||%5,%6) @Zt:@Zb:@Zh:%1@Zi:%3,|||%5|||%6)
-
-#define @Zi:%0,|||||| %0
-#define @Zj:X@(%0(_YM@CP:,,)) X@(%0())
-
-#define @Zk:%0(_YM@CP:,,) %0()
-
-#define _YM@CP:%0,%1) @Zt:@Zb:@Zh:|||%0|||%1)
-
-#define X@(%0string:%1) R@(%1)*/
-
-
-//#define global%0(%1) public%0@(%1)<>{}public%0@(%1)<_YCM:y>X@(_:%0(_YM@CP:%1,,));%0(%1)<_YCM:y>
+// This is nearly all I needed to add to "global" for "void:".  I doubt that
+// "foreign" will be as simple!
+#define @Zz:X@(@Zk:_YM@CP:%0void:%1(%2)) @Zk:_YM@CP:%1(%2)
 
 #define YSIM_NOT_CLIENT (!YSIM_HAS_MASTER || !_YSIM_IS_CLIENT)
+
+#define @global global
 
 #include "y_shortfunc"
 
@@ -302,14 +269,7 @@ forward Master_OnScriptClose(script);
 	#endinput
 #endif
 
-//#if !defined MAX_MASTERS
 #define MAX_MASTERS 26
-//#else
-//	#if MAX_MASTERS > 32
-//		#undef MAX_MASTERS
-//		#define MAX_MASTERS 32
-//	#endif
-//#endif
 
 forward Master_Reassert();
 
@@ -319,8 +279,7 @@ enum _E_YCM
 	_E_YCM@n,
 	_E_YCM@m,
 	_E_YCM@p,
-	_E_YCM@u//,
-	//_YCM@
+	_E_YCM@u
 }
 
 #define _YCM@y (_YCM@==_E_YCM@y)
@@ -333,16 +292,15 @@ static
 	YSI_g_sMasterCount,
 	YSI_g_sMasterData[MAX_MASTERS];
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Master_GetNext
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Master_GetNext</summary>
+<returns>
 	Next master ID to be assigned.
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock Master_GetNext()
 {
@@ -361,15 +319,17 @@ stock Master_GetNext()
 	return -1;
 }
 
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 Hook:
 	OnGameModeInit
-Notes:
+</returns>
+<remarks>
 	Constructor.  Gets the script a master ID.  Now ALWAYS gets an ID, even if
 	the master system is disabled - doing otherwise is just too complicated.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-hook OnScriptInit()
+public OnScriptInit()
 {
 	P:1("Master_OGM");
 	if (!existproperty(8, YSIM_MASTER))
@@ -398,20 +358,36 @@ hook OnScriptInit()
 	C:1(if (_@ == -1) P:E("MasterID not assigned"););
 	// Make sure this is called before all other YSI initialisations, at least
 	// all the ones which use the master system.
-	CallLocalFunction("YSIM_OnMasterSystemInit", "");
+	#if defined YSIM_OnMasterSystemInit
+		YSIM_OnMasterSystemInit();
+	#endif
 	// Just use one name...
-	return 1;
+	#if defined Master_OnScriptInit
+		return Master_OnScriptInit();
+	#else
+		return 1;
+	#endif
 }
 
-#define OnMasterSystemInit YSIM_OnMasterSystemInit
-forward OnMasterSystemInit();
+#undef OnScriptInit
+#define OnScriptInit Master_OnScriptInit
+#if defined Master_OnScriptInit
+	forward Master_OnScriptInit();
+#endif
 
-/*----------------------------------------------------------------------------*\
+#define OnMasterSystemInit YSIM_OnMasterSystemInit
+#if defined YSIM_OnMasterSystemInit
+	forward YSIM_OnMasterSystemInit();
+#endif
+
+/**--------------------------------------------------------------------------**\
 Hook:
 	OnGameModeExit
-Notes:
+</returns>
+<remarks>
 	Destructor.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 public OnScriptExit()
 {
@@ -420,7 +396,6 @@ public OnScriptExit()
 	// function for it.  EXCEPT for this script itself!
 	new
 		func[4];
-	//printf("%d", YSI_g_sMasterCount);
 	for (new i = 0; i != YSI_g_sMasterCount; ++i)
 	{
 		// This is slightly slower for ending and starting scripts, but uses far
@@ -429,39 +404,33 @@ public OnScriptExit()
 		func[0] = YSI_g_sMasterData[i] & 0xFF;
 		func[1] = (YSI_g_sMasterData[i] >> 8) & 0xFF;
 		func[2] = YSI_g_sMasterData[i] >> 16;
-		//if (getproperty(9, func) == _@)
-		//{
-		//	deleteproperty(9, func);
-		//}
-		//printf("call %s", func);
 		CallLocalFunction(func, "");
 		// The properties currently clear instantly, but that may not always be
 		// the case.
-		//printf("after");
 	}
 	setproperty(8, YSIM_MASTER, getproperty(8, YSIM_MASTER) & ~(1 << _@));
-	//printf("s0");
-	CallLocalFunction("YSIM_OnScriptExit", "");
-	//printf("s1");
+	#if defined YSIM_OnScriptExit
+		YSIM_OnScriptExit();
+	#endif
 	CallRemoteFunction("Master_OnScriptClose", "i", _@);
-	//printf("s2");
 	return 1;
 }
 
 #undef OnScriptExit
 #define OnScriptExit YSIM_OnScriptExit
-forward OnScriptExit();
+#if defined YSIM_OnScriptExit
+	forward YSIM_OnScriptExit();
+#endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Master_Reassert
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Master_Reassert</summary>
+<returns>
 	-
-Return:
-	-
-Notes:
+</returns>
+<remarks>
 	Rebuilds the collection of master data whenever a script is restarted.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 public Master_Reassert()
 {
@@ -487,16 +456,16 @@ public Master_Reassert()
 	}
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	_Master_Get
-Params:
-	library[] - The name of the library to try become master for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>_Master_Get</summary>
+<param name="library[]">The name of the library to try become master for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock bool:_Master_Get(library[], bool:force = false)
 {
@@ -531,28 +500,3 @@ stock bool:_Master_Get(library[], bool:force = false)
 	P:C(else P:E("Too many master scripts"););
 	return true;
 }
-
-//#define RS@pc RS@cp
-
-/*
-#define RF:%1[%2](%3)
-#define RF@p:%1[%2](%3)<%4>
-#define RF@c:%1[%2](%3)
-#define RF@v:%1[%2](%3)
-#define RF@n:%1[]()
-#define RF@pc:%1[%2](%3)<%4>
-#define RF@pv:%1[%2](%3)<%4>
-#define RF@pcv:%1[%2](%3)<%4>
-#define RF@vc:%1[%2](%3)
-#define RF@vn:%1[]()
-*/
-
-// Define all the alternate spellings once.
-//#define RC@nv  RC@vn
-
-/*
-#define RC:%1[%2](%3)
-#define RC@v:%1[%2](%3)
-#define RC@n:%1[]()
-#define RC@vn:%1[]()
-*/

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					======================================
 					 y_classes - Advanced class selection 
 					======================================
@@ -133,7 +133,8 @@ Compile options:
 	-
 Operators:
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #include "internal\y_version"
 #include "y_bit"
@@ -266,121 +267,120 @@ stock Class_ResolveGroups(class, Group:forgroup, bool:cp) <>
 	//Bit_SetAll(YSI_g_sClasses[class][E_CLASS_PLAYERS], true, bits<MAX_PLAYERS>);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_IsValid
-Params:
-	classid - Class to check if valid.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_IsValid</summary>
+<param name="classid">Class to check if valid.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_IsValid(%1) (0<=(%1)<MAX_CLASSES&&Class_IsActive(%1))
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_IsValid
-Params:
-	classid - Class to check if active.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_IsValid</summary>
+<param name="classid">Class to check if active.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_IsActive(%1) (YSI_g_sClasses[(%1)][E_CLASS_FLAGS]&e_CLASS_FLAGS_ACTIVE)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Enabled
-Params:
-	classid - Class to check.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Enabled</summary>
+<param name="classid">Class to check.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_Enabled(%1) (YSI_g_sClasses[(%1)][E_CLASS_FLAGS]&e_CLASS_FLAGS_ENABLED)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_X
-Params:
-	classid - Class to get X location for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_X</summary>
+<param name="classid">Class to get X location for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_X(%1) YSI_g_sClasses[(%1)][E_CLASS_X]
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Y
-Params:
-	classid - Class to get Y location for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Y</summary>
+<param name="classid">Class to get Y location for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_Y(%1) YSI_g_sClasses[(%1)][E_CLASS_Y]
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Z
-Params:
-	classid - Class to get Z location for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Z</summary>
+<param name="classid">Class to get Z location for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_Z(%1) YSI_g_sClasses[(%1)][E_CLASS_Z]
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_A
-Params:
-	classid - Class to get angle for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_A</summary>
+<param name="classid">Class to get angle for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_A(%1) YSI_g_sClasses[(%1)][E_CLASS_A]
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Skin
-Params:
-	classid - Class to get skin for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Skin</summary>
+<param name="classid">Class to get skin for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Class_Skin(%1) (YSI_g_sClasses[(%1)][E_CLASS_FLAGS]&e_CLASS_FLAGS_SKIN)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Class
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Class</summary>
+<returns>
 	-
-Return:
-	-
-Notes:
+</returns>
+<remarks>
 	Creates three real player classes so you can scroll correctly with the
 	direction being detected.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 hook OnScriptInit()
 {
@@ -421,22 +421,22 @@ hook OnScriptInit()
 	return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_OnPlayerRequestClass
-Params:
-	playerid - Player who requested a class.
-	class - Class they requested.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_OnPlayerRequestClass</summary>
+<param name="playerid">Player who requested a class.</param>
+<param name="class">Class they requested.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	The input is one of the three real classes used to detect selected
 	direction of alteration.  Scans for a class the player is allowed to use
 	and hot swaps it out.  Uses SetPlayerSkin AND SetSpawnInfo to combat bugs
 	with calling this from OnPlayerRequestSpawn (e.g. the example team script).
 	Calls OnPlayerRequestClassEx with the current internal class not the real
 	one.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Class_FindNew(playerid, playerclass, dir)
 {
@@ -648,9 +648,9 @@ public _Class_OtherRequestClass(playerid, classid)
 		}
 #endif
 
-foreign Class_Goto(playerid, playerclass);
+foreign void:Class_Goto(playerid, playerclass);
 
-global Class_Goto(playerid, playerclass)
+global void:Class_Goto(playerid, playerclass)
 {
 	P:2("Class_Goto called: %i, %i", playerid, playerclass);
 	// This now sets the REAL spawn information, including spawn location.
@@ -660,22 +660,22 @@ global Class_Goto(playerid, playerclass)
 	// Save the last viewed class so that we know which direction the person
 	// went next time OnPlayerRequestClass is called.
 	P:2("Class_Goto() end %08h %08h %d", YSI_g_sSettings, _:e_CLASS_SETTING_OPRCE, playerclass);
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_OnPlayerRequestSpawn
-Params:
-	playerid - Player who selected a spawn.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_OnPlayerRequestSpawn</summary>
+<param name="playerid">Player who selected a spawn.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Has inbuilt protection for a bug where selections aren't correctly
 	debounced so you can press shift twice at once which can mess up some
 	scripts (e.g. the example team selection script).  Calls
 	OnPlayerRequestSpawnEx with an additional class parameter.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 public _Class_OtherRequestSpawn(playerid)
 {
@@ -686,7 +686,7 @@ public _Class_OtherRequestSpawn(playerid)
 		#emit LCTRL      6
 		#emit ADD.C      28
 		#emit PUSH.pri
-		#emit LOAD.pri   YSI_g_sHookC
+		#emit LOAD.pri   YSI_g_sHookS
 		#emit SCTRL      6
 		#emit RETN
 	}
@@ -775,16 +775,16 @@ public _Class_OtherRequestSpawn(playerid)
 		}
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_OnPlayerSpawn
-Params:
-	playerid - Player who spawned.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_OnPlayerSpawn</summary>
+<param name="playerid">Player who spawned.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Sets a player's position based on skin.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 mhook OnPlayerSpawn(playerid)
 {
@@ -964,29 +964,30 @@ mhook OnPlayerDisconnect(playerid, reason)
 {
 }*/
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Add
-Params:
-	skin - Skin of the class.
-	Float:x - X spawn location.
-	Float:y - Y spawn location.
-	Float:z - Z spawn location.
-	Float:a - A spawn location.
-	... - Spawn weapons and ammo (weapon then ammo)
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Add</summary>
+<param name="skin">Skin of the class.</param>
+<param name="Float:x">X spawn location.</param>
+<param name="Float:y">Y spawn location.</param>
+<param name="Float:z">Z spawn location.</param>
+<param name="Float:a">A spawn location.</param>
+<param name="...">Spawn weapons and ammo (weapon then ammo)</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Pretty much AddPlayerClass but allows greater control over the classes.
 	Now has infinate (MAX_CLASS_SPAWN_WEAPONS) spawn weapons.  This is one of
 	the few API functions which is not entirely remote.  This is because it has
 	variable parameters which is need to collect in to a single array to pass to
 	the remote function.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock Class_Add(skin, Float:x, Float:y, Float:z, Float:a, ...)
 {
-	P:3("Class_Add called: %i, %i, %i, %i, %i, %i (+%i)", skin, x, y, z, a, numargs() - 5);
+	//printf("Class_Add called: %i, %f, %f, %f, %f, (+%i)", skin, x, y, z, a, numargs() - 5);
+	P:3("Class_Add called: %i, %f, %f, %f, %f, (+%i)", skin, x, y, z, a, numargs() - 5);
 	new
 		n = numargs(),
 		w = 5,
@@ -997,24 +998,24 @@ stock Class_Add(skin, Float:x, Float:y, Float:z, Float:a, ...)
 	return Class_AddClass(skin, x, y, z, a, weapons, MAX_CLASS_SPAWN_WEAPONS + 1, Group:-1, Group:-1);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_AddEx
-Params:
-	forgroup - Group that can use the skin.
-	setgroup - Group to add the player to on selection.
-	skin - Skin of the class.
-	Float:x - X spawn location.
-	Float:y - Y spawn location.
-	Float:z - Z spawn location.
-	Float:a - A spawn location.
-	... - Spawn weapons and ammo (weapon then ammo)
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_AddEx</summary>
+<param name="forgroup">Group that can use the skin.</param>
+<param name="setgroup">Group to add the player to on selection.</param>
+<param name="skin">Skin of the class.</param>
+<param name="Float:x">X spawn location.</param>
+<param name="Float:y">Y spawn location.</param>
+<param name="Float:z">Z spawn location.</param>
+<param name="Float:a">A spawn location.</param>
+<param name="...">Spawn weapons and ammo (weapon then ammo)</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Pretty much AddPlayerClass but allows greater control over the classes.
 	Now has infinate (MAX_CLASS_SPAWN_WEAPONS) spawn weapons.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock Class_AddEx(Group:forgroup, Group:setgroup, skin, Float:x, Float:y, Float:z, Float:a, ...)
 {
@@ -1029,22 +1030,22 @@ stock Class_AddEx(Group:forgroup, Group:setgroup, skin, Float:x, Float:y, Float:
 	return Class_AddClass(skin, x, y, z, a, weapons, MAX_CLASS_SPAWN_WEAPONS + 1, forgroup, setgroup);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_AddForGroup
-Params:
-	group - Group to allow to use the class.
-	skin - Skin of the class.
-	Float:x - X spawn location.
-	Float:y - Y spawn location.
-	Float:z - Z spawn location.
-	Float:a - A spawn location.
-	... - Weapon data.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_AddForGroup</summary>
+<param name="group">Group to allow to use the class.</param>
+<param name="skin">Skin of the class.</param>
+<param name="Float:x">X spawn location.</param>
+<param name="Float:y">Y spawn location.</param>
+<param name="Float:z">Z spawn location.</param>
+<param name="Float:a">A spawn location.</param>
+<param name="...">Weapon data.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Adds a class only people in the specified group can use.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock Class_AddForGroup(Group:group, skin, Float:x, Float:y, Float:z, Float:a, ...)
 {
@@ -1059,22 +1060,22 @@ stock Class_AddForGroup(Group:group, skin, Float:x, Float:y, Float:z, Float:a, .
 	return Class_AddClass(skin, x, y, z, a, weapons, MAX_CLASS_SPAWN_WEAPONS + 1, group, Group:-1);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_AddWithGroupSet
-Params:
-	group - Group to make players who use this group.
-	skin - Skin of the class.
-	Float:x - X spawn location.
-	Float:y - Y spawn location.
-	Float:z - Z spawn location.
-	Float:a - A spawn location.
-	... - Spawn weapons.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_AddWithGroupSet</summary>
+<param name="group">Group to make players who use this group.</param>
+<param name="skin">Skin of the class.</param>
+<param name="Float:x">X spawn location.</param>
+<param name="Float:y">Y spawn location.</param>
+<param name="Float:z">Z spawn location.</param>
+<param name="Float:a">A spawn location.</param>
+<param name="...">Spawn weapons.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Adds a class which puts you in the specified group when selected.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock Class_AddWithGroupSet(Group:group, skin, Float:x, Float:y, Float:z, Float:a, ...)
 {
@@ -1089,32 +1090,33 @@ stock Class_AddWithGroupSet(Group:group, skin, Float:x, Float:y, Float:z, Float:
 	return Class_AddClass(skin, x, y, z, a, weapons, MAX_CLASS_SPAWN_WEAPONS + 1, Group:-1, group);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_AddClass
-Params:
-	skin - Skin of the class.
-	Float:x - X spawn location.
-	Float:y - Y spawn location.
-	Float:z - Z spawn location.
-	Float:a - A spawn location.
-	weapons[] - Array of spawn weapon data.
-	count - Number of weapons added.
-	forgroup - Group that can use the class.
-	asgroup - Group to assign people to with this class.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_AddClass</summary>
+<param name="skin">Skin of the class.</param>
+<param name="Float:x">X spawn location.</param>
+<param name="Float:y">Y spawn location.</param>
+<param name="Float:z">Z spawn location.</param>
+<param name="Float:a">A spawn location.</param>
+<param name="weapons[]">Array of spawn weapon data.</param>
+<param name="count">Number of weapons added.</param>
+<param name="forgroup">Group that can use the class.</param>
+<param name="asgroup">Group to assign people to with this class.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Does the hard work.  This took a long time to get working correctly with the
 	new master system, infact getting just this one function to compile took a
 	major re-working of the macros to reduce the length of intermediate stages.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Class_AddClass(s,Float:x,Float:y,Float:z,Float:a,w[],c,Group:f,Group:g);
 
 global Class_AddClass(s,Float:x,Float:y,Float:z,Float:a,w[],c,Group:f,Group:g)
 {
-	P:2("Class_AddClass called: %i, %f, %f, %f, %f, %a, %i, %i, %i", s, x, y, z, a, w, c, _:f, _:g);
+	//printf("Class_AddClass called: %i, %f, %f, %f, %f, %s, %i, %i, %i", s, x, y, z, a, Debug_PrintArray(w, c), c, _:f, _:g);
+	P:2("Class_AddClass called: %i, %f, %f, %f, %f, %s, %i, %i, %i", s, x, y, z, a, Debug_PrintArray(w, c), c, _:f, _:g);
 	new
 		i;
 	while (i < MAX_CLASSES)
@@ -1137,24 +1139,28 @@ global Class_AddClass(s,Float:x,Float:y,Float:z,Float:a,w[],c,Group:f,Group:g)
 		YSI_g_sClasses[i][E_CLASS_WEAPONS][j] = w[j];
 		++j;
 	}
+	//printf("Class_AddClass: weapon %d %d %d", j, c, i);
 	PA_FastInit(YSI_g_sClasses[i][E_CLASS_PLAYERS]);
+	//printf("Class_AddClass: weapon %d %d %d", j, c, f);
 	Class_ResolveGroups(i, f, false);
+	//printf("Class_AddClass: weapon %d %d %d", j, c, g);
 	YSI_g_sClasses[i][E_CLASS_GROUP] = g;
 	YSI_g_sClassCount++;
+	//printf("Class_AddClass: weapon %d %d %d", j, c, YSI_g_sClassCount);
 	return i;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_HasGroup
-Params:
-	classid - The class to test.
-	Group:group - The group to test setting of.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_HasGroup</summary>
+<param name="classid">The class to test.</param>
+<param name="Group:group">The group to test setting of.</param>
+<returns>
 	Does this class add players to the given group on spawn?
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Class_HasGroup(classid, Group:group);
 
@@ -1163,16 +1169,15 @@ global Class_HasGroup(classid, Group:group)
 	return YSI_g_sClasses[classid][E_CLASS_GROUP] == group;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Enable
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Enable</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Class_Enable(classid, bool:toggle);
 
@@ -1204,61 +1209,61 @@ global Class_Enable(classid, bool:toggle)
 	return 0;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Delete
-Params:
-	classid - Class to delete.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Delete</summary>
+<param name="classid">Class to delete.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Completely removes a class from the system.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Class_Delete(classid);
+foreign void:Class_Delete(classid);
 
-global Class_Delete(classid)
+global void:Class_Delete(classid)
 {
 	P:2("Class_Delete called: %i", classid);
 	if (Class_Enable(classid, false))
 	{
 		YSI_g_sClasses[classid][E_CLASS_FLAGS] = e_CLASS_FLAGS:0;
 	}
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_SetPlayer
-Params:
-	classid - Class to set permissions for.
-	playerid - Player to set for.
-	set - Whether or not they can use this class.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_SetPlayer</summary>
+<param name="classid">Class to set permissions for.</param>
+<param name="playerid">Player to set for.</param>
+<param name="set">Whether or not they can use this class.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Class_SetPlayer(cl, pid, bool:s);
+foreign void:Class_SetPlayer(cl, pid, bool:s);
 
-global Class_SetPlayer(cl, pid, bool:s)
+global void:Class_SetPlayer(cl, pid, bool:s)
 {
 	//printf("CLASS SET PLAYER: %d %d %d", cl, pid, s);
-	return PA_Set(YSI_g_sClasses[cl][E_CLASS_PLAYERS], pid, s);
+	PA_Set(YSI_g_sClasses[cl][E_CLASS_PLAYERS], pid, s);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_GetPlayer
-Params:
-	classid - Class to set permissions for.
-	playerid - Player to set for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_GetPlayer</summary>
+<param name="classid">Class to set permissions for.</param>
+<param name="playerid">Player to set for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Class_GetPlayer(cl,pid);
 
@@ -1267,16 +1272,16 @@ global bool:Class_GetPlayer(cl,pid)
 	return PA_Get(YSI_g_sClasses[cl][E_CLASS_PLAYERS], pid);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Class_Get
-Params:
-	playerid - Player to get the current class of.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Class_Get</summary>
+<param name="playerid">Player to get the current class of.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Class_Get(playerid);
 
@@ -1289,53 +1294,53 @@ global Class_Get(playerid)
 	return -1;
 }
 
-foreign Class_DisableSelection(playerid);
+foreign void:Class_DisableSelection(playerid);
 
-global Class_DisableSelection(playerid)
+global void:Class_DisableSelection(playerid)
 {
 	if (YSI_g_sPlayerClass[playerid] & e_PLAYER_CLASS_INSELECT)
 	{
 		Class_Spectate(playerid);
 		Class_TK(playerid);
 	}
-	return 1;
+	//return 1;
 }
 
-foreign Class_DisableReselection(playerid);
+foreign void:Class_DisableReselection(playerid);
 
-global Class_DisableReselection(playerid)
+global void:Class_DisableReselection(playerid)
 {
 	YSI_g_sPlayerClass[playerid] |= (e_PLAYER_CLASS_DISABLED);
 	// Disable "F4".
 	//ForceClassSelection(playerid);
-	return 1;
+	//return 1;
 }
 
-foreign Class_EnableReselection(playerid);
+foreign void:Class_EnableReselection(playerid);
 
-global Class_EnableReselection(playerid)
+global void:Class_EnableReselection(playerid)
 {
 	YSI_g_sPlayerClass[playerid] &= ~(e_PLAYER_CLASS_DISABLED);
-	return 1;
+	//return 1;
 }
 
-foreign Class_ForceReselection(playerid);
+foreign void:Class_ForceReselection(playerid);
 
-global Class_ForceReselection(playerid)
+global void:Class_ForceReselection(playerid)
 {
 	YSI_g_sPlayerClass[playerid] = (YSI_g_sPlayerClass[playerid] | e_PLAYER_CLASS_RETURNED) & ~(e_PLAYER_CLASS_SPAWNSINCE);
 	ForceClassSelection(playerid);
-	return 1;
+	//return 1;
 }
 
-foreign Class_ReturnToSelection(playerid);
+foreign void:Class_ReturnToSelection(playerid);
 
-global Class_ReturnToSelection(playerid)
+global void:Class_ReturnToSelection(playerid)
 {
 	YSI_g_sPlayerClass[playerid] |= (e_PLAYER_CLASS_INSTANT);
 	Class_ForceReselection(playerid);
 	TogglePlayerSpectating(playerid, false);
-	return 1;
+	//return 1;
 }
 
 static stock Class_Spectate(playerid)

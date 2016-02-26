@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					================================
 					Y Sever Includes - Commands Core
 					================================
@@ -159,7 +159,8 @@ Compile options:
 	COMMAND_SENSITIVE - Make commands case sensitive.
 	COMMAND_ACCURATE - Can use '@' in command names.
 	MAX_COMMANDS - The maximum number of commands which can be used.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if defined _INC_y_text
 	#error y_commands must be included before y_text
@@ -289,45 +290,45 @@ static stock
 	YSI_g_sCommandIndex,
 	YSI_g_sCommandCount;
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Name
-Params:
-	index - Index of the command to operate on.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Name</summary>
+<param name="index">Index of the command to operate on.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets the name of a function from the array.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_Name(%1) \
 	(YSI_g_sCommands[(%1)][E_COMMANDS_FUNCTION][1])
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetFuncName
-Params:
-	index - Index of the command to operate on.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetFuncName</summary>
+<param name="index">Index of the command to operate on.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets the full function name for a slot - note that this may not be the right
 	function if this slot points to another one.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_GetFuncName(%1) \
 	(YSI_g_sCommands[(%1)][E_COMMANDS_FUNCTION])
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetPointer
-Params:
-	index - Index of the command to operate on.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetPointer</summary>
+<param name="index">Index of the command to operate on.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets the pointer for a function from the array.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
 	#define Command_GetPointer(%1) \
@@ -336,97 +337,95 @@ Notes:
 	#define Command_GetPointer(%1) \
 		(YSI_g_sCommands[(%1)][E_COMMANDS_FUNC_POINTER])
 #endif
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetProvider
-Params:
-	index - Index of the command to operate on.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetProvider</summary>
+<param name="index">Index of the command to operate on.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets the unique script in which this version of the command is.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
 	#define Command_Provider(%1) \
 		(YSI_g_sCommands[(%1)][E_COMMANDS_FUNC_POINTER]>>>24)
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetProvider
-Params:
-	index - Index of the command to operate on.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetProvider</summary>
+<param name="index">Index of the command to operate on.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets the unique script in which this version of the command is.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
 	#define Command_DefaultProvider() \
 		(YSI_g_sCommandFlags & e_COMM_FLAG_PROVIDER)
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetFunction
-Params:
-	index - Index of the command to operate on.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetFunction</summary>
+<param name="index">Index of the command to operate on.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets the real function for this slot.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_GetFunction(%1) \
 	(Command_GetFuncName(Command_GetPointer((%1))))
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_CheckPlayer
-Params:
-	index - Index of the command to operate on.
-	playerid - The player to check for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_CheckPlayer</summary>
+<param name="index">Index of the command to operate on.</param>
+<param name="playerid">The player to check for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets wether a player can use a command.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_CheckPlayer(%1,%2) \
 	(YSI_g_sCommands[(%1)][E_COMMANDS_PLAYERS][Bit_Slot(%2)+1]&Bit_Mask(%2))
 	//(PA=([E_COMMANDS_PLAYERS], (%2)))
 	//(Bit_Get(YSI_g_sCommands[(%1)][E_COMMANDS_PLAYERS], (%2)))
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_DeniedReturn
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_DeniedReturn</summary>
+<returns>
 	e_COMM_FLAG_PERMISSION_RET
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_DeniedReturn() \
 	(YSI_g_sCommandFlags & e_COMM_FLAG_PERMISSION_RET)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetDeniedReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetDeniedReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_SetDeniedReturn(bool:set);
+foreign void:Command_SetDeniedReturn(bool:set);
 
-global Command_SetDeniedReturn(bool:set)
+global void:Command_SetDeniedReturn(bool:set)
 {
 	P:2("Command_SetDeniedReturn called: %i", bool:set);
 	if (set)
@@ -437,30 +436,30 @@ global Command_SetDeniedReturn(bool:set)
 	{
 		YSI_g_sCommandFlags &= ~e_COMM_FLAG_PERMISSION_RET;
 	}
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetProvider
-Params:
-	p - Script.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetProvider</summary>
+<param name="p">Script.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Set the current provider to use for all commands being added.  Basically
 	allows us to have the same command name in different scripts and have them
 	do different things, with different players targetting different ones.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
-	foreign Command_SetProvider(p);
+	foreign void:Command_SetProvider(p);
 	
-	global Command_SetProvider(p)
+	global void:Command_SetProvider(p)
 	{
 		P:2("Command_SetProvider called: %i", p);
 		YSI_g_sCommandFlags = (YSI_g_sCommandFlags & ~e_COMM_FLAG_PROVIDER) | (e_COMM_FLAG:p & e_COMM_FLAG_PROVIDER) | e_COMM_FLAG_MULPRO;
-		return 1;
+		//return 1;
 	}
 	
 	foreign Command_GetProvider();
@@ -480,16 +479,16 @@ Notes:
 		return _:Command_DefaultProvider();
 	}
 	
-	foreign Command_SetPlayerProvider(playerid,p);
+	foreign void:Command_SetPlayerProvider(playerid,p);
 	
-	global Command_SetPlayerProvider(playerid,p)
+	global void:Command_SetPlayerProvider(playerid,p)
 	{
 		P:2("Command_SetPlayerProvider called: %i, %i", playerid, p);
 		if (0 <= playerid < MAX_PLAYERS)
 		{
 			YSI_g_sPlayerProvider{playerid} = p & 0xFF;
 		}
-		return 1;
+		//return 1;
 	}
 	
 	foreign Command_GetPlayerProvider(playerid);
@@ -501,16 +500,15 @@ Notes:
 	}
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetDeniedReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetDeniedReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Command_GetDeniedReturn();
 
@@ -520,78 +518,73 @@ global bool:Command_GetDeniedReturn()
 	return bool:Command_DeniedReturn();
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_HasCollisions
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_HasCollisions</summary>
+<returns>
 	e_COMM_FLAG_COLLISION
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_HasCollisions() \
 	(YSI_g_sCommandFlags & e_COMM_FLAG_COLLISION)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_HasCollisions
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_HasCollisions</summary>
+<returns>
 	e_COMM_FLAG_MULPRO
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
 	#define Command_HasMultipleProviders() \
 		(YSI_g_sCommandFlags & e_COMM_FLAG_MULPRO)
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetCollisions
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetCollisions</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_SetCollisions() \
 	YSI_g_sCommandFlags |= e_COMM_FLAG_COLLISION
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_IllegalReturn
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_IllegalReturn</summary>
+<returns>
 	e_COMM_FLAG_ILLEGAL
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_IllegalReturn() \
 	(YSI_g_sCommandFlags & e_COMM_FLAG_ILLEGAL)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetIllegalReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetIllegalReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_SetIllegalReturn(bool:set);
+foreign void:Command_SetIllegalReturn(bool:set);
 
-global Command_SetIllegalReturn(bool:set)
+global void:Command_SetIllegalReturn(bool:set)
 {
 	P:2("Command_SetIllegalReturn called: %i", bool:set);
 	if (set)
@@ -602,19 +595,18 @@ global Command_SetIllegalReturn(bool:set)
 	{
 		YSI_g_sCommandFlags &= ~e_COMM_FLAG_ILLEGAL;
 	}
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetIllegalReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetIllegalReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Command_GetIllegalReturn();
 
@@ -624,34 +616,32 @@ global bool:Command_GetIllegalReturn()
 	return bool:Command_IllegalReturn();
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_IllegalReturn
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_IllegalReturn</summary>
+<returns>
 	e_COMM_FLAG_ILLEGAL
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_UnknownReturn() \
 	(YSI_g_sCommandFlags & e_COMM_FLAG_UNKNOWN)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetIllegalReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetIllegalReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_SetUnknownReturn(bool:set);
+foreign void:Command_SetUnknownReturn(bool:set);
 
-global Command_SetUnknownReturn(bool:set)
+global void:Command_SetUnknownReturn(bool:set)
 {
 	P:2("Command_SetUnknownReturn called: %i", bool:set);
 	if (set)
@@ -662,19 +652,18 @@ global Command_SetUnknownReturn(bool:set)
 	{
 		YSI_g_sCommandFlags &= ~e_COMM_FLAG_UNKNOWN;
 	}
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetIllegalReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetIllegalReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Command_GetUnknownReturn();
 
@@ -684,34 +673,32 @@ global bool:Command_GetUnknownReturn()
 	return bool:Command_UnknownReturn();
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_DisconnectReturn
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_DisconnectReturn</summary>
+<returns>
 	e_COMM_FLAG_DISCONNECT
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_DisconnectReturn() \
 	(YSI_g_sCommandFlags & e_COMM_FLAG_DISCONNECT)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetDisconnectReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetDisconnectReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_SetDisconnectReturn(bool:set);
+foreign void:Command_SetDisconnectReturn(bool:set);
 
-global Command_SetDisconnectReturn(bool:set)
+global void:Command_SetDisconnectReturn(bool:set)
 {
 	P:2("Command_SetDisconnectReturn called: %i", bool:set);
 	if (set)
@@ -722,19 +709,18 @@ global Command_SetDisconnectReturn(bool:set)
 	{
 		YSI_g_sCommandFlags &= ~e_COMM_FLAG_DISCONNECT;
 	}
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetDisconnectReturn
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetDisconnectReturn</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Command_GetDisconnectReturn();
 
@@ -744,34 +730,32 @@ global bool:Command_GetDisconnectReturn()
 	return bool:Command_DisconnectReturn();
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_DeniedDisplay
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_DeniedDisplay</summary>
+<returns>
 	e_COMM_FLAG_PERMISSION_WARN
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_DeniedDisplay() \
 	(YSI_g_sCommandFlags & e_COMM_FLAG_PERMISSION_WARN)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetDeniedDisplay
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetDeniedDisplay</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_SetDeniedDisplay(bool:set);
+foreign void:Command_SetDeniedDisplay(bool:set);
 
-global Command_SetDeniedDisplay(bool:set)
+global void:Command_SetDeniedDisplay(bool:set)
 {
 	P:2("Command_SetDeniedDisplay called: %i", bool:set);
 	if (set)
@@ -782,19 +766,18 @@ global Command_SetDeniedDisplay(bool:set)
 	{
 		YSI_g_sCommandFlags &= ~e_COMM_FLAG_PERMISSION_WARN;
 	}
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetDeniedDisplay
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetDeniedDisplay</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Command_GetDeniedDisplay();
 
@@ -804,16 +787,16 @@ global bool:Command_GetDeniedDisplay()
 	return bool:Command_DeniedDisplay();
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetNameInt
-Params:
-	f - Command to get the name of.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetNameInt</summary>
+<param name="f">Command to get the name of.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 /*RF:Command_GetNameInt[i](f)
 {
@@ -826,18 +809,18 @@ Notes:
 	return 0;
 }*/
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetName
-Params:
-	funcid - Command to get the name of.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetName</summary>
+<param name="funcid">Command to get the name of.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 
 native Command_GetName(funcid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 /*stock Command_GetName(funcid)
 {
@@ -852,34 +835,32 @@ native Command_GetName(funcid);
 	return buffer;
 }*/
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_IsSorted
-Params:
-	-
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_IsSorted</summary>
+<returns>
 	e_COMM_FLAG_SORTED
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_IsSorted() \
 	(YSI_g_sCommandFlags & e_COMM_FLAG_SORTED)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Generate
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Generate</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_Generate();
+foreign void:Command_Generate();
 
-global Command_Generate()
+global void:Command_Generate()
 {
 	P:2("Command_Generate called");
 	P:2("Command_Generate called");
@@ -923,55 +904,54 @@ global Command_Generate()
 		// Set sorted to true.
 		YSI_g_sCommandFlags |= e_COMM_FLAG_SORTED;
 	}
-	return 1;
+	//return 1;
 }
 
-foreign Command_IncOPCR();
+foreign void:Command_IncOPCR();
 
-global Command_IncOPCR()
+global void:Command_IncOPCR()
 {
 	P:2("Command_IncOPCR called");
 	YSI_g_sCommandFlags += e_COMM_FLAG_OPCR_ADD;
-	return 1;
+	//return 1;
 }
 
-foreign Command_DecOPCR();
+foreign void:Command_DecOPCR();
 
-global Command_DecOPCR()
+global void:Command_DecOPCR()
 {
 	P:2("Command_DecOPCR called");
 	YSI_g_sCommandFlags -= e_COMM_FLAG_OPCR_ADD;
-	return 1;
+	//return 1;
 }
 
-foreign Command_IncOPCP();
+foreign void:Command_IncOPCP();
 
-global Command_IncOPCP()
+global void:Command_IncOPCP()
 {
 	P:2("Command_IncOPCP called");
 	YSI_g_sCommandFlags += e_COMM_FLAG_OPCP_ADD;
-	return 1;
+	//return 1;
 }
 
-foreign Command_DecOPCP();
+foreign void:Command_DecOPCP();
 
-global Command_DecOPCP()
+global void:Command_DecOPCP()
 {
 	P:2("Command_DecOPCP called");
 	YSI_g_sCommandFlags -= e_COMM_FLAG_OPCP_ADD;
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	OnScriptInit
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>OnScriptInit</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 hook OnScriptInit()
 {
@@ -1037,22 +1017,24 @@ hook OnScriptExit()
 	return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	OnScriptClose
-Params:
-	script - ID of the closing script.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>OnScriptClose</summary>
+<param name="script">ID of the closing script.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Called when a script under the control of the master system ends.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER && YSIM_NOT_CLIENT
 	#if _YSIM_IS_CLOUD
 		public OnScriptClose(script) <>
 		{
-			CallLocalFunction("Command_OnScriptClose", "i", script);
+			#if defined Command_OnScriptClose
+				Command_OnScriptClose(script);
+			#endif
 		}
 		
 		public OnScriptClose(script) <_YCM:y>
@@ -1106,81 +1088,82 @@ Notes:
 		}
 		//YSI_g_sMaster23 = getproperty(8, "x@");
 		// I can add better removal code later.  Done ^
-		CallLocalFunction("Command_OnScriptClose", "i", script);
+		#if defined Command_OnScriptClose
+			Command_OnScriptClose(script);
+		#endif
 	}
 	
 	// Don't need ALS here as we did it supporting it at the start.
 	#undef OnScriptClose
 	#define OnScriptClose Command_OnScriptClose
-	forward Command_OnScriptClose(script);
+	#if defined Command_OnScriptClose
+		forward Command_OnScriptClose(script);
+	#endif
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_TouchNamed
-Params:
-	string:command[] - Command to "touch".
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_TouchNamed</summary>
+<param name="string:command[]">Command to "touch".</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Used within "GROUP_ADD" to quickly assign a load of commands to just one
 	group.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_TouchNamed(string:command[]);
+foreign void:Command_TouchNamed(string:command[]);
 
-global Command_TouchNamed(string:command[])
+global void:Command_TouchNamed(string:command[])
 {
 	new
 		id = Command_Find(command);
-	if (id == COMMAND_NOT_FOUND)
+	if (id != COMMAND_NOT_FOUND)
 	{
-		return 0;
+		NO_GROUPS(id)
+		{
+			return; //0;
+		}
 	}
-	NO_GROUPS(id)
-	{
-		return 0;
-	}
-	return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Touch
-Params:
-	string:command[] - Command to "touch".
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Touch</summary>
+<param name="string:command[]">Command to "touch".</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Used within "GROUP_ADD" to quickly assign a load of commands to just one
 	group.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_Touch(command);
+foreign void:Command_Touch(command);
 
-global Command_Touch(command)
+global void:Command_Touch(command)
 {
 	if (Command_IsValid(command))
 	{
 		NO_GROUPS(command)
 		{
-			return 0;
+			return; //0;
 		}
-		return 1;
+		//return 1;
 	}
-	return 0;
+	//return 0;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	OnPlayerConnect
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>OnPlayerConnect</summary>
+<returns>
 	-
-Return:
+</returns>
+<remarks>
 	-
-Notes:
-	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 // TODO: Rewrite!
 //RA:Command_OnPlayerConnect(playerid)
@@ -1213,44 +1196,44 @@ Notes:
 	}
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_
-Params:
-	command - Command to declare.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_</summary>
+<param name="command">Command to declare.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Deprecated!
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_(%1) \
 	CMD:%1(playerid,params[],help)
 
-/*----------------------------------------------------------------------------*\
-Function:
-	ycmd
-Params:
-	command[] - Command to register.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>ycmd</summary>
+<param name="command[]">Command to register.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Deprecated!
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define ycmd(%1);
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_FindFast
-Params:
-	data[] - Function name to find.
-	value - Hash of function name.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_FindFast</summary>
+<param name="data[]">Function name to find.</param>
+<param name="value">Hash of function name.</param>
+<returns>
 	Position in functions array or COMMAND_NOT_FOUND.
-Notes:
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
 	static stock Command_FindFast(data[], value, provider = 0xFF)
@@ -1354,17 +1337,17 @@ static stock Command_FindFastStrict(data[], value, provider)
 	return COMMAND_NOT_FOUND;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_FindSlow
-Params:
-	funcname[] - Function to find.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_FindSlow</summary>
+<param name="funcname[]">Function to find.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Searches through the array for function linearly - used to set altnames
 	before the data has been sorted.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
 	static stock Command_FindSlow(funcname[], provider = 0xFF)
@@ -1393,17 +1376,17 @@ Notes:
 	return COMMAND_NOT_FOUND;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_FindSlowStrict
-Params:
-	funcname[] - Function to find.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_FindSlowStrict</summary>
+<param name="funcname[]">Function to find.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Searches through the array for function linearly - used to set altnames
 	before the data has been sorted.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Command_FindSlowStrict(funcname[], provider)
 {
@@ -1433,18 +1416,18 @@ static stock Command_FindSlowStrict(funcname[], provider)
 	return COMMAND_NOT_FOUND;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_AddHash
-Params:
-	command[] - Command text to hash.
-	dest[] - Array to copy to.
-	idx - Point to start copying from.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_AddHash</summary>
+<param name="command[]">Command text to hash.</param>
+<param name="dest[]">Array to copy to.</param>
+<param name="idx">Point to start copying from.</param>
+<returns>
 	hash value.
-Notes:
+</returns>
+<remarks>
 	Hashes a string and copies it to a destination at the same time.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Command_AddHash(command[], dest[], idx)
 {
@@ -1488,18 +1471,18 @@ static stock Command_AddHash(command[], dest[], idx)
 	return hash;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_AddHashPacked
-Params:
-	command[] - Packed command text to hash.
-	dest[] - Array to copy to.
-	idx - Point to start copying from.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_AddHashPacked</summary>
+<param name="command[]">Packed command text to hash.</param>
+<param name="dest[]">Array to copy to.</param>
+<param name="idx">Point to start copying from.</param>
+<returns>
 	hash value.
-Notes:
+</returns>
+<remarks>
 	Hashes a string and copies it to a destination at the same time.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Command_AddHashPacked(command[], dest[], idx)
 {
@@ -1543,16 +1526,16 @@ static stock Command_AddHashPacked(command[], dest[], idx)
 	return hash;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_FastHash
-Params:
-	command[] - Command text to hash.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_FastHash</summary>
+<param name="command[]">Command text to hash.</param>
+<returns>
 	hash value.
-Notes:
+</returns>
+<remarks>
 	Just hashes the passed string.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Command_FastHash(command[])
 {
@@ -1565,16 +1548,16 @@ static stock Command_FastHash(command[])
 	return hash;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_PackHash
-Params:
-	command[] - Command text to hash.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_PackHash</summary>
+<param name="command[]">Command text to hash.</param>
+<returns>
 	hash value.
-Notes:
+</returns>
+<remarks>
 	Hashes packed strings.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Command_PackHash(command[])
 {
@@ -1626,19 +1609,19 @@ static stock Command_PackHash(command[])
 	return hash;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Hash
-Params:
-	command[] - Command text to hash.
-	&index - Start point and variable to store end point to.
-	&length - Length of the hashed word.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Hash</summary>
+<param name="command[]">Command text to hash.</param>
+<param name="&index">Start point and variable to store end point to.</param>
+<param name="&length">Length of the hashed word.</param>
+<returns>
 	hash value.
-Notes:
+</returns>
+<remarks>
 	Hashes a string using space delimiters and returns information such as the
 	length of the string hased and the start point of the next word.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Command_Hash(command[], &index, &length)
 {
@@ -1661,16 +1644,16 @@ static stock Command_Hash(command[], &index, &length)
 	return hash;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Find
-Params:
-	function[] - Function name to find.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Find</summary>
+<param name="function[]">Function name to find.</param>
+<returns>
 	Position in functions array or COMMAND_NOT_FOUND.
-Notes:
+</returns>
+<remarks>
 	Used by API functions to avoid repeated sorting checks.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_HAS_MASTER
 	static stock Command_Find(function[], provider = -1)
@@ -1718,19 +1701,19 @@ Notes:
 	#endif
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetID
-Params:
-	function[] - Function name to find.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetID</summary>
+<param name="function[]">Function name to find.</param>
+<returns>
 	The ID of the passed function.
-Notes:
+</returns>
+<remarks>
 	-
 
 native Command_GetID(function[])
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Command_GetID(string:function[]);
 
@@ -1740,25 +1723,25 @@ global Command_GetID(string:function[])
 	return Command_Find(function);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetPlayer
-Params:
-	command - Command to set for.
-	playerid - Player to set.
-	bool:set - Wether or not this player can use this command.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetPlayer</summary>
+<param name="command">Command to set for.</param>
+<param name="playerid">Player to set.</param>
+<param name="bool:set">Wether or not this player can use this command.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	-
 
 native bool:Command_SetPlayer(command, playerid, bool:set);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_SetPlayer(c,p,bool:s);
+foreign void:Command_SetPlayer(c,p,bool:s);
 
-global Command_SetPlayer(c,p,bool:s)
+global void:Command_SetPlayer(c,p,bool:s)
 {
 	P:2("Command_SetPlayer called: %i, %i, %i", c, p, s);
 //	if (c < 0 || c >= YSI_g_sCommandIndex)
@@ -1771,49 +1754,49 @@ global Command_SetPlayer(c,p,bool:s)
 		// Not in range,
 //		return false;
 	}
-	return 1;
+	//return 1;
 //	return s;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_SetPlayerNamed
-Params:
-	funcname[] - Command to set for.
-	playerid - Player to set.
-	set - Wether or not this player can use this command.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_SetPlayerNamed</summary>
+<param name="funcname[]">Command to set for.</param>
+<param name="playerid">Player to set.</param>
+<param name="set">Wether or not this player can use this command.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Like Command_SetPlayer but for a function name.
 
 native bool:Command_SetPlayerNamed(funcname[], playerid, bool:set);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_SetPlayerNamed(string:f[],p,bool:s);
+foreign void:Command_SetPlayerNamed(string:f[],p,bool:s);
 
-global Command_SetPlayerNamed(string:f[],p,bool:s)
+global void:Command_SetPlayerNamed(string:f[],p,bool:s)
 {
 	P:2("Command_SetPlayerNamed called: \"%s\", %i, %i", f, p, s);
 	Command_SetPlayer(Command_Find(f), p, s);
-	return 1;
+	//return 1;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetPlayer
-Params:
-	command - Command to get for.
-	playerid - Player to get.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetPlayer</summary>
+<param name="command">Command to get for.</param>
+<param name="playerid">Player to get.</param>
+<returns>
 	Wether this player can use this command.
-Notes:
+</returns>
+<remarks>
 	-
 
 native bool:Command_GetPlayer(command, playerid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Command_GetPlayer(command, playerid);
 
@@ -1828,20 +1811,20 @@ global bool:Command_GetPlayer(command, playerid)
 	return false;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetPlayerNamed
-Params:
-	funcname[] - Command to get for.
-	playerid - Player to get.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetPlayerNamed</summary>
+<param name="funcname[]">Command to get for.</param>
+<param name="playerid">Player to get.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Like Command_GetPlayer but for a function name.
 
 native bool:Command_GetPlayerNamed(funcname[], playerid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign bool:Command_GetPlayerNamed(string:func[], playerid);
 
@@ -1851,18 +1834,18 @@ global bool:Command_GetPlayerNamed(string:func[], playerid)
 	return Command_GetPlayer(Command_Find(func), playerid);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Remove
-Params:
-	func - The slot of the command to remove.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Remove</summary>
+<param name="func">The slot of the command to remove.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 
 native Command_Remove(func);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 static stock Command_RemoveFromBintree(func)
 {
@@ -1885,9 +1868,9 @@ static stock Command_RemoveFromBintree(func)
 	}
 }
 
-foreign Command_Remove(func);
+foreign void:Command_Remove(func);
 
-global Command_Remove(func)
+global void:Command_Remove(func)
 {
 	P:2("Command_Remove called: %i", func);
 	if (0 <= func < MAX_COMMANDS)
@@ -1922,39 +1905,39 @@ global Command_Remove(func)
 		//Bintree_Delete(YSI_g_sSearchTree, func, YSI_g_sCommandCount);
 		Command_RemoveFromBintree(func);
 		--YSI_g_sCommandCount;
-		return 1;
+		//return 1;
 	}
-	return 0;
+	//return 0;
 }
 
-foreign Command_RemoveNamed(string:func[]);
+foreign void:Command_RemoveNamed(string:func[]);
 
-global Command_RemoveNamed(string:func[])
+global void:Command_RemoveNamed(string:func[])
 {
 	P:2("Command_RemoveNamed called: \"%s\"", func);
-	return Command_Remove(Command_Find(func));
+	Command_Remove(Command_Find(func));
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Add
-Params:
-	funcname[] - The function to add to the array.
-	script - The script ID with the function.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Add</summary>
+<param name="funcname[]">The function to add to the array.</param>
+<param name="script">The script ID with the function.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	If the list of commands have already been sorted into the binary tree the
 	new commands will be appended, otherwise they will just be added to the
 	array.
 
 native Command_Add(funcname[], script);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
-foreign Command_Add(string:f[],s);
+foreign void:Command_Add(string:f[],s);
 
-global Command_Add(string:f[],s)
+global void:Command_Add(string:f[],s)
 {
 	#if !YSIM_HAS_MASTER
 		#pragma unused s
@@ -1990,7 +1973,7 @@ global Command_Add(string:f[],s)
 				#if YSIM_HAS_MASTER
 					YSI_g_sCommands[idx][E_COMMANDS_MASTERS] |= 1 << s;
 				#endif
-				return 0;
+				return; //0;
 			}
 			if (!Command_HasCollisions())
 			{
@@ -2013,7 +1996,7 @@ global Command_Add(string:f[],s)
 				#if YSIM_HAS_MASTER
 					YSI_g_sCommands[idx][E_COMMANDS_MASTERS] |= 1 << s;
 				#endif
-				return 0;
+				return; //0;
 			}
 		}
 		YSI_g_sCommands[YSI_g_sCommandIndex][E_COMMANDS_FUNCTION][0] = COMMAND_FUNCTION_PREFIX;
@@ -2053,7 +2036,7 @@ global Command_Add(string:f[],s)
 		C:4(new str[32];strpack(str, f);printf("Command_Add: %08x%08x%08x%08x", str[0], str[1], str[2], str[3]););
 		++YSI_g_sCommandCount;
 	}
-	return 1;
+	//return 1;
 	/*else
 	{
 		// Not all hope is lost - check if this command name already exists.
@@ -2081,22 +2064,22 @@ global Command_Add(string:f[],s)
 	return COMMAND_NOT_FOUND;*/
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_AddAlt
-Params:
-	funcidx - The function this is an alternate to.
-	altname[] - The new name.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_AddAlt</summary>
+<param name="funcidx">The function this is an alternate to.</param>
+<param name="altname[]">The new name.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	If the list of commands have already been sorted into the binary tree the
 	new commands will be appended, otherwise they will just be added to the
 	array.
 
 native Command_AddAlt(funcidx, altname[]);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Command_AddAlt(oidx, string:altname[]);
 
@@ -2219,20 +2202,20 @@ global Command_AddAlt(oidx, string:altname[])
 	return COMMAND_NOT_FOUND;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_AddAltNamed
-Params:
-	function[] - The function this is an alternate to.
-	altname[] - The new name.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_AddAltNamed</summary>
+<param name="function[]">The function this is an alternate to.</param>
+<param name="altname[]">The new name.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Add an alternate command for an existing command.
 
 native Command_AddAltNamed(function[], altname[]);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Command_AddAltNamed(string:function[], string:altname[]);
 
@@ -2242,16 +2225,15 @@ global Command_AddAltNamed(string:function[], string:altname[])
 	return Command_AddAlt(Command_Find(function), altname);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Debug
-Params:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Debug</summary>
+<returns>
 	-
-Return:
-	-
-Notes:
+</returns>
+<remarks>
 	Print some random information about commands if _DEBUG is set.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock Command_Debug()
 {
@@ -2279,22 +2261,24 @@ stock Command_Debug()
 	#endif
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	OnPlayerCommandText
-Params:
-	playerid - Player who entered the command.
-	cmdtext[] - Text entered.
-Return:
-	true - success or hidden fail, false - fail.
-Notes:
+/**--------------------------------------------------------------------------**\
+<summary>OnPlayerCommandText</summary>
+<param name="playerid">Player who entered the command.</param>
+<param name="cmdtext[]">Text entered.</param>
+<returns>
+	true - success or hidden fail.
+	false - fail.
+</returns>
+<remarks>
 	Calls the Command_Process function if this is not a client.
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #if YSIM_NOT_CLIENT
 	mhook OnPlayerCommandText(playerid, cmdtext[])
 	{
 		P:1("Commands_OnPlayerCommandText");
+		if (isnull(cmdtext)) return Command_UnknownReturn();
 		if (YSI_g_sCommandFlags & e_COMM_FLAG_OPCR)
 		{
 			switch (CallRemoteFunction("OnPlayerCommandReceived", "is", playerid, cmdtext))
@@ -2342,18 +2326,19 @@ Notes:
 	}
 #endif
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_ReProcess
-Params:
-	playerid - Player who entered the command.
-	cmdtext[] - Text entered.
-	help - Called from the help commmand or OnPlayerCommandText.
-Return:
-	true - success or hidden fail, false - fail.
-Notes:
+/**--------------------------------------------------------------------------**\
+<summary>Command_ReProcess</summary>
+<param name="playerid">Player who entered the command.</param>
+<param name="cmdtext[]">Text entered.</param>
+<param name="help">Called from the help commmand or OnPlayerCommandText.</param>
+<returns>
+	true - success or hidden fail.
+	false - fail.
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Command_ReProcess(p,string:c[],h);
 
@@ -2363,18 +2348,19 @@ global Command_ReProcess(p,string:c[],h)
 	return Command_Process(p,c,h);
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_Process
-Params:
-	playerid - Player who entered the command.
-	cmdtext[] - Text entered.
-	help - Called from the help commmand or OnPlayerCommandText.
-Return:
-	true - success or hidden fail, false - fail.
-Notes:
+/**--------------------------------------------------------------------------**\
+<summary>Command_Process</summary>
+<param name="playerid">Player who entered the command.</param>
+<param name="cmdtext[]">Text entered.</param>
+<param name="help">Called from the help commmand or OnPlayerCommandText.</param>
+<returns>
+	true - success or hidden fail.
+	false - fail.
+</returns>
+<remarks>
 	-
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 #define Command_CallR(%1,%2) \
 	CallRemoteFunction(Command_GetFuncName((%1)), "isii", playerid, %2, help, script)
@@ -2540,21 +2526,23 @@ static stock Command_Process(playerid, cmdtext[], help)
 		}
 	}
 	P:5("Command_Process: Not found");
+	#pragma tabsize 4
 	return Command_UnknownReturn();
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetName
-Params:
-	funcid - Command to get the name of.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetName</summary>
+<param name="funcid">Command to get the name of.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
+	-
 
 native Command_GetName(funcid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign string:Command_GetName(funcid);
 
@@ -2570,20 +2558,20 @@ global string:Command_GetName(funcid)
 	return buffer;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetDisplay
-Params:
-	f - Command to get the real name of.
-	p - Player to get the name for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetDisplay</summary>
+<param name="f">Command to get the real name of.</param>
+<param name="p">Player to get the name for.</param>
+<returns>
 	The name of a command for a single player.
-Notes:
+</returns>
+<remarks>
 	-
 
 native Command_GetDisplay(funcid, playerid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign string:Command_GetDisplay(funcid, playerid);
 
@@ -2620,22 +2608,22 @@ global string:Command_GetDisplay(funcid, playerid)
 	return buffer;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetDisplayNamed
-Params:
-	f[] - Command to get the real name of.
-	p - Player to get the name for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetDisplayNamed</summary>
+<param name="f[]">Command to get the real name of.</param>
+<param name="p">Player to get the name for.</param>
+<returns>
 	The name of a named function for one player.
-Notes:
+</returns>
+<remarks>
 	Remote function call for Command_GetDisplayNameNamed - avoids needing to
 	expose users to the master system's odd way of returning strings.  This is
 	the only part I've not yet fixed up to be nice and hidden.
 
 native string:Command_GetDisplayNamed(string:funcid[], playerid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign string:Command_GetDisplayNamed(string:func[], playerid);
 
@@ -2672,19 +2660,19 @@ global string:Command_GetDisplayNamed(string:func[], playerid)
 	return buffer;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetPlayerCommandCount
-Params:
-	playerid - Player to count for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetPlayerCommandCount</summary>
+<param name="playerid">Player to count for.</param>
+<returns>
 	-
-Notes:
+</returns>
+<remarks>
 	Gets the number of comamnds this player can use.
 
 native Command_GetPlayerCommandCount(playerid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign Command_GetPlayerCommandCount(playerid);
 
@@ -2705,20 +2693,20 @@ global Command_GetPlayerCommandCount(playerid)
 	return count;
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Command_GetNext
-Params:
-	index - Index of the next command for this player.
-	playerid - Player to get the name for.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Command_GetNext</summary>
+<param name="index">Index of the next command for this player.</param>
+<param name="playerid">Player to get the name for.</param>
+<returns>
 	The name of a command for a single player.
-Notes:
+</returns>
+<remarks>
 	-
 
 native Command_GetNext(index, playerid);
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 foreign string:Command_GetNext(index, playerid);
 

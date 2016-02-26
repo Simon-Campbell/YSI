@@ -202,7 +202,7 @@ YSI_EXTRA_LOGIN_TITLE = Login
 YSI_EXTRA_LOGIN_PROMPT = Please enter your password to log in:
 
 YSI_EXTRA_REGISTER_TITLE = Register
-YSI_EXTRA_REGISTER_PROMPT = Please enter your password to register:
+YSI_EXTRA_REGISTER_PROMPT = Please enter a password to register:
 YSI_EXTRA_REGISTER_MISMATCH = The passwords do not match.  Please try again.
 
 YSI_EXTRA_CONFIRM_PROMPT = Please confirm your password:
@@ -214,7 +214,7 @@ DIALOG_CANCEL = Cancel
 DIALOG_OK = OK
 DIALOG_YES = Yes
 DIALOG_NO = No
-DIALOG_OK = OK
+;DIALOG_OK = OK
 DIALOG_CLOSE = Close
 DIALOG_BACK = Back
 DIALOG_FORWARD = Forward
@@ -228,5 +228,6 @@ DIALOG_REMOVE = Remove
 DIALOG_QUIT = Quit
 DIALOG_NONE =
 
-
+[ysi_zonenames]
+YSI_ZONE_NAME = %s%s
 

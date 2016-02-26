@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/**--------------------------------------------------------------------------**\
 					====================================
 					 y_testing - Run unit tests easilly 
 					====================================
@@ -49,11 +49,16 @@ Legal:
 Version:
 	1.0
 Changelog:
+	16/02/12:
+		Added better error reporting (less verbose passes).
+		Removed "Tests:".
+		Added player requiring tests.
 	25/10/10:
 		Integrated in to YSI.
 	06/08/10:
 		First version
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 /*#if defined _inc_a_samp || defined _samp_included || defined _inc_y_version
 	#error y_testing must be the VERY FIRST include in your mode if being used.
@@ -75,19 +80,18 @@ Changelog:
 #define _YSI_NO_SQUARE:%0);%1(%2[%3]%4);} _YSI_NO_SQUARE:%0);%1(%2%4);}
 
 //#define _YSI_NO_TAG_NATIVE:_YSI_RE_NATIVE<%0:%1|||%2|||%3:%4>%5{%6;%7:%8:%9} _YSI_RE_NATIVE<%1|||%2|||%4>%5{%6;return%8:%9}
-#define _YSI_NO_TAG_NATIVE:_YSI_RE_NATIVE<%0:%1|||%2|||%3:%4>_YSI_RE_STOCK<%5:%6|||%7|||_:%8:%9> _YSI_RE_NATIVE<%1|||%2|||%4>_YSI_RE_STOCK<%5:%6|||%7|||%8:%9>
+#define _YSI_NO_TAG_NATIVE:_YSI_RE_NATIVE<%0:%1|||%2|||%3:%4>_YSI_RE_STOCK<%5:%6|||%7|||_:%8:%9> _YSI_RE_NATIVE<%1|||%2|||%4>_YSI_RE_STOCK<%5:%6|||%7|||%8:%9>*/
 
-#include <a_samp>*/
+#include <a_samp>
 
-#include "internal\y_version"
-
-#include "y_amx"
-#include "internal\y_shortfunc"
-#include "y_debug"
-
-#include "y_va"
-
-#include "internal\y_natives"
+#if defined YSI_TESTS
+	#if defined INCLUDE_TESTS
+		#error Incompatible testing options (YSI_TESTS + INCLUDE_TESTS)
+	#endif
+	#if !defined RUN_TESTS
+		#define RUN_TESTS
+	#endif
+#endif
 
 #if defined INCLUDE_TESTS
 	#define RUN_TESTS
@@ -115,6 +119,8 @@ Changelog:
 	//	#define TestClose:%1() stock Shut_@%1()
 	#endif
 #endif
+
+#define Y_TESTING_DIALOG_ID (0x7974) // "yt"
 
 #define TEST_TRUE(%0)  Testing_Test(!!%0)
 #define TEST_FALSE(%0) Testing_Test(!%0)
@@ -145,9 +151,65 @@ Changelog:
 #define ASSERT_NULL(%0) ASSERT(0 == %0) //Testing_Test(0==%0,__name)
 #define ASSERT_N:%1(%0) ASSERT(%1 == %0) //Testing_Test(%1==%0,__name)
 
+#define ASK(%0) Testing_Ask(playerid,%0)
+
 static stock
+	YSI_g_sFailMessage[512],
+	YSI_g_sPlayer = cellmax,
+	bool:YSI_g_sAsked,
 	YSI_g_sTests,
 	YSI_g_sFails;
+
+#if defined RUN_TESTS
+	#define Test:%1() forward bool:Tezt_@%1(); public bool:Tezt_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	//#define Tests:%1() forward bool:Test_@%1(); public bool:Test_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	#define TestInit:%1() forward Init_@%1(); public Init_@%1() for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))
+	#define TestClose:%1() forward Shut_@%1(); public Shut_@%1() for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))
+	
+	#define PTest:%1(%2) forward bool:Tezp_@%1(%2); public bool:Tezp_@%1(%2) for(new string:__name[]=#%1,bool:__once=(printf("*** Player Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	//#define Tests:%1() forward bool:Test_@%1(); public bool:Test_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	#define PTestInit:%1(%2) forward Inip_@%1(%2); public Inip_@%1(%2) for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))
+	#define PTestClose:%1(%2) forward Shup_@%1(%2); public Shup_@%1(%2) for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))
+#else
+	#define Test:%1() stock bool:Test_@%1()
+	#define TestInit:%1() stock Init_@%1()
+	#define TestClose:%1() stock Shut_@%1()
+	
+	#define PTest:%1(%2) stock bool:Test_@%1(%2)
+	#define PTestInit:%1(%2) stock Init_@%1(%2)
+	#define PTestClose:%1(%2) stock Shut_@%1(%2)
+#endif
+
+// These all need to come AFTER the types are defined in case the have tests.
+#include "internal\y_version"
+
+#include "y_amx"
+#include "internal\y_shortfunc"
+#include "y_debug"
+
+#include "internal\y_natives"
+
+#include "y_va"
+
+/**--------------------------------------------------------------------------**\
+<summary>Testing_Ask</summary>
+<param name="playerid">Player to ask a question to.</param>
+<param name="str[]">What to ask.</param>
+<param name="va_args<>">Additional data.</param>
+<returns>
+	-
+</returns>
+<remarks>
+	Calls a dialog to ask the player if the given test actually passed.
+</remarks>
+\**--------------------------------------------------------------------------**/
+
+stock Testing_Ask(playerid, str[] = "", va_args<>)
+{
+	va_format(YSI_g_sFailMessage, sizeof (YSI_g_sFailMessage), str, va_start<2>);
+	ShowPlayerDialog(playerid, Y_TESTING_DIALOG_ID, DIALOG_STYLE_MSGBOX, "Did the test pass?", YSI_g_sFailMessage, "Yes", "No");
+	YSI_g_sAsked = true;
+}
 
 stock Testing_Test(bool:x, str[] = "", va_args<>)
 {
@@ -171,88 +233,52 @@ stock Testing_Test(bool:x, str[] = "", va_args<>)
 			P:T(str, va_start<2>);
 		}
 	}
-	else /*if (numargs() == 2)
-	{
-		P:T(TEST_PASSED " %s", va_start<1>);
-	}
-	else
-	{
-		P:T(str, va_start<2>);
-		if (str[0] == '\2')
+	#if defined TEST_SHOW_PASSES
+		else /*if (numargs() == 2)
 		{
-			strunpack(str, !TEST_PASSED, 17);
-			str[16] = ' ';
+			P:T(TEST_PASSED " %s", va_start<1>);
 		}
-		printf(str);
-		P:T(str, va_start<2>);*/
-	{
-		P:T(TEST_PASSED, va_start<2>);
-	}
+		else
+		{
+			P:T(str, va_start<2>);
+			if (str[0] == '\2')
+			{
+				strunpack(str, !TEST_PASSED, 17);
+				str[16] = ' ';
+			}
+			printf(str);
+			P:T(str, va_start<2>);*/
+		{
+			P:T(TEST_PASSED, va_start<2>);
+		}
+	#endif
 }
 
-/*----------------------------------------------------------------------------*\
-Function:
-	Testing_Run
-Params:
-	&tests - Number of tests run.
-	&fails - Number of tests which failed.
-	buffer[33] - The name of the first test which failed.
-Return:
+/**--------------------------------------------------------------------------**\
+<summary>Testing_Run</summary>
+<param name="&tests">Number of tests run.</param>
+<param name="&fails">Number of tests which failed.</param>
+<param name="buffer[33]">The name of the first test which failed.</param>
+<returns>
 	Wether all tests were sucessful or not.
-Notes:
+</returns>
+<remarks>
 	-
 
 native Testing_Run(&tests, &fails, buffer[33] = "");
 
-\*----------------------------------------------------------------------------*/
+</remarks>
+\**--------------------------------------------------------------------------**/
 
 stock bool:Testing_Run(&tests, &fails, lastfail[33] = "", bool:p = false)
 {
 	P:3("bool:Testing_Run called: %i, %i, \"%s\", %i", tests, fails, lastfail, p);
-	#pragma unused p
+	#pragma unused p, lastfail
 	#if defined RUN_TESTS
 		P:2("Testing_Run() called");
 		new
 			idx,
 			buffer[32];
-		while ((idx = AMX_GetPublicName(idx, buffer, "Test_@")))
-		{
-			strunpack(buffer, buffer);
-			++YSI_g_sTests;
-			// Call the setup function if there is one.
-			buffer[0] = 'I';
-			buffer[1] = 'n';
-			buffer[2] = 'i';
-			buffer[3] = 't';
-			CallLocalFunction(buffer, "");
-			// Call the test.
-			buffer[0] = 'T';
-			buffer[1] = 'e';
-			buffer[2] = 's';
-			buffer[3] = 't';
-			P:5("Testing_Run(): Calling %s", buffer[6]);
-			if (!CallLocalFunction(buffer, ""))
-			{
-				if (YSI_g_sFails)
-				{
-					++YSI_g_sFails;
-				}
-				else
-				{
-					fails = 0;
-					// Copy the string over.
-					while ((lastfail[fails] = buffer[fails + 6])) ++fails;
-					YSI_g_sFails = 1;
-				}
-				//TC(if (p) printf("*** Test failed: %s", buffer[fails + 6]););
-			}
-			// Call the shutdown function if there is one.
-			buffer[0] = 'S';
-			buffer[1] = 'h';
-			buffer[2] = 'u';
-			buffer[3] = 't';
-			CallLocalFunction(buffer, "");
-		}
 		while ((idx = AMX_GetPublicName(idx, buffer, "Tezt_@")))
 		{
 			strunpack(buffer, buffer);
@@ -271,6 +297,13 @@ stock bool:Testing_Run(&tests, &fails, lastfail[33] = "", bool:p = false)
 			fails = YSI_g_sFails;
 			P:5("Testing_Run(): Calling %s", buffer[6]);
 			CallLocalFunction(buffer, "");
+			#if !defined TEST_SHOW_PASSES
+				if (YSI_g_sFails == fails)
+				{
+					printf(TEST_PASSED);
+					printf(" ");
+				}
+			#endif
 			/*if (YSI_g_sFails != fails)
 			{
 				if (YSI_g_sFails)
@@ -302,11 +335,100 @@ stock bool:Testing_Run(&tests, &fails, lastfail[33] = "", bool:p = false)
 	#endif
 }
 
+/**--------------------------------------------------------------------------**\
+<summary>Testing_Player</summary>
+<param name="playerid">Player to test on.</param>
+<param name="&idx">Next test to run.</param>
+<param name="&tests">Number of tests run.</param>
+<param name="&fails">Number of tests which failed.</param>
+<param name="buffer[33]">The name of the first test which failed.</param>
+<returns>
+	Wether all tests were sucessful or not.
+</returns>
+<remarks>
+	-
+
+native Testing_Run(&tests, &fails, buffer[33] = "");
+
+</remarks>
+\**--------------------------------------------------------------------------**/
+
+stock bool:Testing_Player(playerid, &idx, &tests, &fails, lastfail[33] = "", bool:p = false)
+{
+	P:3("bool:Testing_Player called: %i, %i, %i, %i, \"%s\", %i", playerid, idx, tests, fails, lastfail, p);
+	#pragma unused p
+	#if defined RUN_TESTS
+		P:2("Testing_Player() called");
+		new
+			//idx,
+			buffer[32];
+		//while ((idx = AMX_GetPublicName(idx, buffer, "Tezt_@")))
+		if ((idx = AMX_GetPublicName(idx, buffer, "Tezp_@")))
+		{
+			strunpack(buffer, buffer);
+			//++YSI_g_sTests;
+			// Call the setup function if there is one.
+			buffer[0] = 'I';
+			buffer[1] = 'n';
+			buffer[2] = 'i';
+			buffer[3] = 'p';
+			CallLocalFunction(buffer, "");
+			// Call the test.
+			buffer[0] = 'T';
+			buffer[1] = 'e';
+			buffer[2] = 'z';
+			buffer[3] = 'p';
+			fails = YSI_g_sFails;
+			P:5("Testing_Player(): Calling %s", buffer[6]);
+			CallLocalFunction(buffer, "");
+			#if !defined TEST_SHOW_PASSES
+				if (YSI_g_sFails == fails)
+				{
+					printf(TEST_PASSED);
+					printf(" ");
+				}
+			#endif
+			/*if (YSI_g_sFails != fails)
+			{
+				if (YSI_g_sFails)
+				{
+					++YSI_g_sFails;
+				}
+				else
+				{
+					fails = 0;
+					// Copy the string over.
+					while ((lastfail[fails] = buffer[fails + 6])) ++fails;
+					YSI_g_sFails = 1;
+				}
+				//C:1(if (p) printf("*** Test failed: %s", buffer[fails + 6]););
+			}*/
+			// Call the shutdown function if there is one.
+			//buffer[0] = 'S';
+			//buffer[1] = 'h';
+			//buffer[2] = 'u';
+			//buffer[3] = 'p';
+			//CallLocalFunction(buffer, "");
+		}
+		tests = YSI_g_sTests;
+		fails = YSI_g_sFails;
+		return fails == 0;
+	#else
+		#pragma unused tests, fails, lastfail
+		return true;
+	#endif
+}
+
 #if defined RUN_TESTS
-	#define Test:%1() forward bool:Tezt_@%1(); public bool:Tezt_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
-	#define Tests:%1() forward bool:Test_@%1(); public bool:Test_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	/*#define Test:%1() forward bool:Tezt_@%1(); public bool:Tezt_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	//#define Tests:%1() forward bool:Test_@%1(); public bool:Test_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
 	#define TestInit:%1() forward Init_@%1(); public Init_@%1() for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))
 	#define TestClose:%1() forward Shut_@%1(); public Shut_@%1() for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))
+	
+	#define PTest:%1(%2) forward bool:Tezp_@%1(%2); public bool:Tezp_@%1(%2) for(new string:__name[]=#%1,bool:__once=(printf("*** Player Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	//#define Tests:%1() forward bool:Test_@%1(); public bool:Test_@%1() for(new string:__name[]=#%1,bool:__once=(printf("*** Test %s start", __name) || TRUE);__once;__once=(printf(" ") && FALSE))
+	#define PTestInit:%1(%2) forward Inip_@%1(%2); public Inip_@%1(%2) for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))
+	#define PTestClose:%1(%2) forward Shup_@%1(%2); public Shup_@%1(%2) for(new string:__name[]=#%1,bool:__once=TRUE;__once;__once=(printf(" ", __name) && FALSE))*/
 	
 	#if defined _AUTO_RUN_TESTS
 		#if !defined FILTERSCRIPT
@@ -338,6 +460,140 @@ stock bool:Testing_Run(&tests, &fails, lastfail[33] = "", bool:p = false)
 			}
 			
 			#define main forward Testing_main(); public Testing_main
+			
+			Testing_Next(playerid)
+			{
+				new
+					buffer[32];
+				for ( ; ; )
+				{
+					new
+						fails = YSI_g_sFails;
+					// Get the last test (nicely fails for cellmax).
+					if ((YSI_g_sPlayer = AMX_GetPublicName(YSI_g_sPlayer, buffer, "Tezp_@")))
+					{
+						strunpack(buffer, buffer);
+						// Call the shutdown function if there is one.
+						buffer[0] = 'S';
+						buffer[1] = 'h';
+						buffer[2] = 'u';
+						buffer[3] = 'p';
+						CallLocalFunction(buffer, "i", playerid);
+					}
+					// Get the new test, but don't store the index.
+					if (AMX_GetPublicName(YSI_g_sPlayer, buffer, "Tezp_@"))
+					{
+						YSI_g_sAsked = false;
+						//++YSI_g_sTests;
+						strunpack(buffer, buffer);
+						// Call the setup function if there is one.
+						buffer[0] = 'I';
+						buffer[1] = 'n';
+						buffer[2] = 'i';
+						buffer[3] = 'p';
+						CallLocalFunction(buffer, "i", playerid);
+						// Call the test.
+						buffer[0] = 'T';
+						buffer[1] = 'e';
+						buffer[2] = 'z';
+						buffer[3] = 'p';
+						P:5("Testing_Next(): Calling %s", buffer[6]);
+						CallLocalFunction(buffer, "i", playerid);
+					}
+					else
+					{
+						YSI_g_sAsked = true;
+						// No more tests.
+						printf("*** Tests: %d, Fails: %d", YSI_g_sTests, YSI_g_sFails);
+						if (!YSI_g_sFails)
+						{
+							printf(" ");
+							printf("  ||==========================||  ");
+							printf("  || ALL PLAYER TESTS PASSED! ||  ");
+							printf("  ||==========================||  ");
+							printf(" ");
+						}
+					}
+					// If the test needs a player but doesn't ask them anything
+					// then we can't wait for "OnDialogResponse" to run the next
+					// one.
+					if (YSI_g_sAsked)
+					{
+						break;
+					}
+					else if (fails == YSI_g_sFails)
+					{
+						printf(TEST_PASSED);
+					}
+				}
+				//while (!YSI_g_sAsked);
+			}
+			
+			public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
+			{
+				if (dialogid == Y_TESTING_DIALOG_ID)
+				{
+					++YSI_g_sTests;
+					if (response)
+					{
+						// Pass.
+						printf(TEST_PASSED);
+					}
+					else
+					{
+						// Fail.
+						printf(TEST_FAILED " %s", YSI_g_sFailMessage);
+						++YSI_g_sFails;
+					}
+					Testing_Next(playerid);
+					return 1;
+				}
+				#if defined Testing_OnDialogResponse
+					return Testing_OnDialogResponse(playerid, dialogid, response, listitem, inputtext);
+				#else
+					return 1;
+				#endif
+			}
+			
+			#if defined _ALS_OnDialogResponse
+				#undef OnDialogResponse
+			#else
+				#define _ALS_OnDialogResponse
+			#endif
+			#define OnDialogResponse Testing_OnDialogResponse
+			#if defined Testing_OnDialogResponse
+				forward Testing_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
+			#endif
+			
+			public OnPlayerSpawn(playerid)
+			{
+				if (YSI_g_sPlayer == cellmax && !IsPlayerNPC(playerid))
+				{
+					printf(" ");
+					printf("  ||==========================||  ");
+					printf("  || STARTING PLAYER TESTS... ||  ");
+					printf("  ||==========================||  ");
+					printf(" ");
+					YSI_g_sTests = 0;
+					YSI_g_sFails = 0;
+					Testing_Next(playerid);
+				}
+				#if defined Testing_OnPlayerSpawn
+					return Testing_OnPlayerSpawn(playerid);
+				#else
+					return 1;
+				#endif
+			}
+			
+			#if defined _ALS_OnPlayerSpawn
+				#undef OnPlayerSpawn
+			#else
+				#define _ALS_OnPlayerSpawn
+			#endif
+			#define OnPlayerSpawn Testing_OnPlayerSpawn
+			#if defined Testing_OnPlayerSpawn
+				forward Testing_OnPlayerSpawn(playerid);
+			#endif
 		#endif
 	#else
 		Testing_RunAll()
@@ -366,8 +622,12 @@ stock bool:Testing_Run(&tests, &fails, lastfail[33] = "", bool:p = false)
 		}
 	#endif
 #else
-	#define Tests:%1() stock bool:Tests_@%1()
-	#define Test:%1() stock bool:Test_@%1()
+	//#define Tests:%1() stock bool:Tests_@%1()
+	/*#define Test:%1() stock bool:Test_@%1()
 	#define TestInit:%1() stock Init_@%1()
 	#define TestClose:%1() stock Shut_@%1()
+	
+	#define PTest:%1(%2) stock bool:Test_@%1(%2)
+	#define PTestInit:%1(%2) stock Init_@%1(%2)
+	#define PTestClose:%1(%2) stock Shut_@%1(%2)*/
 #endif
